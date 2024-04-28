@@ -16,6 +16,8 @@ sources = [
   'src/resources.c',
   'src/tilemap.c',
   'src/animation.c',
+  'src/keybind.c',
+  'src/gamestate.c',
 ]
 
 executable('exe', sources,

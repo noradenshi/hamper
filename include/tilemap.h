@@ -1,13 +1,11 @@
 #pragma once
 #include <raylib.h>
 
-// Warning: do NOT use directly
 typedef struct _Tile {
     Rectangle pos;
     int src_id;
 } Tile;
 
-// Warning: do NOT use directly
 typedef struct _Tilemap {
     int capacity;
     int size;

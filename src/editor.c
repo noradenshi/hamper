@@ -96,8 +96,9 @@ void editorUpdate() {
                        -1);
     }
 
-    if (IsKeyPressed(KEY_I)) {
+    if (IsKeyDown(KEY_LEFT_CONTROL) && IsKeyPressed(KEY_S)) {
         tilemapSave(active_tilemap, "resources/test_tmp");
+        TraceLog(LOG_INFO, "Saved!");
     }
 }
 

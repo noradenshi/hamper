@@ -26,6 +26,7 @@ void resourcesInit() {
             (int)(i / textures.tileset.width) * recs.tileset[i].height;
     }
 
+    textures.background = LoadTexture("resources/background.png");
     textures.hamster = LoadTexture("resources/hamster.png");
     for (int i = 0; i < IDLE_SIZE; i++) {
         frames.hamster_idle[i].rectangle.x = i * 16;

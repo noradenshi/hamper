@@ -10,7 +10,7 @@
 const Vector2 tile_origin = {0};
 
 // private
-int tilemapGetTileAt(Tilemap *tilemap, Vector2 point) {
+int tilemapGetTileIdAt(Tilemap *tilemap, Vector2 point) {
     for (int i = 0; i < tilemap->size; i++) {
         if (CheckCollisionPointRec(point, tilemap->tiles[i].pos)) {
             return i;
@@ -99,7 +99,7 @@ Tilemap *tilemapLoad(char *filename) {
 }
 
 void tilemapSetTile(Tilemap *tilemap, Rectangle pos, int src_id) {
-    int tile_id = tilemapGetTileAt(tilemap, (Vector2){pos.x, pos.y});
+    int tile_id = tilemapGetTileIdAt(tilemap, (Vector2){pos.x, pos.y});
     if (tile_id == -1) {
         tile_id = tilemap->size;
         tilemap->size++;

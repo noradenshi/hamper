@@ -30,6 +30,18 @@ void hamsterInit() {
     hamsterCameraUpdate(); // to apply correct offset
 }
 
+void hamsterMove(bool is_left) {
+    hamster_is_flipped = is_left;
+    hamster_anim->is_flipped = hamster_is_flipped;
+}
+
+void hamsterJump() {
+    if (hamster_is_grounded) {
+        hamster_is_grounded = false;
+        hamster_velocity.y = -hamster_jump_force;
+    }
+}
+
 void hamsterUpdate() {
     if (hamster_pos.y < -16.f) {
         hamster_is_grounded = false;
@@ -39,23 +51,14 @@ void hamsterUpdate() {
         hamster_velocity.y = 0.f;
         hamster_pos.y = -16.f;
     }
-    if (IsKeyPressed(KEY_UP) && hamster_is_grounded) {
-        hamster_is_grounded = false;
-        hamster_velocity.y = -hamster_jump_force;
-    }
 
-    hamster_direction = -IsKeyDown(KEY_LEFT) + IsKeyDown(KEY_RIGHT);
-    switch (hamster_direction) {
-    case -1:
-        hamster_is_flipped = true;
-        break;
-    case 1:
-        hamster_is_flipped = false;
-        break;
-    default:
-        break;
-    }
-    hamster_anim->is_flipped = hamster_is_flipped;
+    hamster_velocity.x += hamster_direction * hamster_speed *
+                          (IsKeyDown(KEY_LEFT_SHIFT) + 1) * GetFrameTime();
+
+    if (hamster_is_grounded)
+        hamster_velocity.x = hamster_velocity.x / grass_friction;
+    else
+        hamster_velocity.x = hamster_velocity.x / air_friction;
 
     if (hamster_direction == 0) {
         hamster_anim = animations.hamster_idle;
@@ -65,15 +68,10 @@ void hamsterUpdate() {
     }
     animationUpdate(hamster_anim);
 
-    hamster_velocity.x += hamster_direction * hamster_speed *
-                          (IsKeyDown(KEY_LEFT_SHIFT) + 1) * GetFrameTime();
-    if (hamster_is_grounded)
-        hamster_velocity.x = hamster_velocity.x / grass_friction;
-    else
-        hamster_velocity.x = hamster_velocity.x / air_friction;
-
     hamster_pos = Vector2Add(hamster_pos, hamster_velocity);
     hamster_camera.target = hamster_pos;
+
+    hamster_direction = 0;
 }
 
 void hamsterCameraUpdate() {

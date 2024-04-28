@@ -1,37 +1,26 @@
 #include "editor.h"
 #include "hamster.h"
+#include "keybind.h"
+#include "gamestate.h"
 #include "resources.h"
 #include "tilemap.h"
 #include <raylib.h>
 #include <raymath.h>
 #include <rlgl.h>
 
-enum _GameState {
-    GSTATE_PLAYING,
-    GSTATE_EDITOR,
-} gameState;
-
-void gstateDebug(float x, float y, int fontsize) {
-    switch (gameState) {
-    case GSTATE_PLAYING:
-        DrawText("GAME", x, y, fontsize, WHITE);
-        break;
-    case GSTATE_EDITOR:
-        DrawText("EDITOR", x, y, fontsize, WHITE);
-        break;
-    }
-}
 int main() {
     SetConfigFlags(FLAG_WINDOW_RESIZABLE);
     InitWindow(1200, 800, "hamper");
+    // SetExitKey(KEY_NULL);
 
+    KeyboardKey *keybinds = keybindInit();
     resourcesInit();
     hamsterInit();
     Tilemap *const test_map = tilemapLoad("resources/test_tmp");
     editorInit(test_map);
 
     SetTargetFPS(60);
-    gameState = GSTATE_PLAYING;
+    gstateSet(GSTATE_PLAYING);
 
     while (!WindowShouldClose()) {
         if (GetScreenHeight() != window_data.HEIGHT ||
@@ -41,20 +30,14 @@ int main() {
             editorCameraUpdate();
         }
 
-        switch (gameState) {
+        switch (gstateGet()) {
         case GSTATE_PLAYING:
-            if (IsKeyPressed(KEY_E)) {
-                gameState = GSTATE_EDITOR;
-            }
-
+            keybindUpdate(keybinds);
             hamsterUpdate();
             break;
 
         case GSTATE_EDITOR:
-            if (IsKeyPressed(KEY_G)) {
-                gameState = GSTATE_PLAYING;
-            }
-
+            keybindUpdate(keybinds);
             editorUpdate();
             break;
         }
@@ -62,7 +45,7 @@ int main() {
         BeginDrawing();
         ClearBackground(BLACK);
 
-        switch (gameState) {
+        switch (gstateGet()) {
         case GSTATE_PLAYING:
             BeginMode2D(*hamsterGetCamera());
             tilemapDraw(test_map);
