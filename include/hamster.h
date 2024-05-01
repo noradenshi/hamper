@@ -1,11 +1,13 @@
 #pragma once
+#include "tilemap.h"
 #include <raylib.h>
 
 void hamsterInit();
-void hamsterMove(bool is_left);
+void hamsterMove(short direction);
+Rectangle hamsterGetRect();
+void hamsterHandleCollisions(Collisions *collisions);
 void hamsterJump();
 void hamsterUpdate();
 void hamsterCameraUpdate();
 Camera2D *hamsterGetCamera();
-Vector2 hamsterGetPosition();
 void hamsterDraw();

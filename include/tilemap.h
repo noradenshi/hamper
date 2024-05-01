@@ -1,19 +1,18 @@
 #pragma once
 #include <raylib.h>
 
-typedef struct _Tile {
-    Rectangle pos;
-    int src_id;
-} Tile;
+typedef struct _Tile Tile;
+typedef struct _Tilemap Tilemap;
 
-typedef struct _Tilemap {
-    int capacity;
+#define MAX_COLLISIONS 6
+typedef struct _Collisions {
+    Rectangle rec[MAX_COLLISIONS];
     int size;
-    Tile *tiles;
-} Tilemap;
+} Collisions;
 
 Tilemap *tilemapEmpty();
 Tilemap *tilemapLoad(char *filename);
+Collisions *tilemapGetCollisions(Tilemap *tilemap, Rectangle rectangle);
 void tilemapSetTile(Tilemap *tilemap, Rectangle pos, int src_id);
 void tilemapSave(Tilemap *tilemap, char *filename);
 void tilemapDraw(Tilemap *tilemap);

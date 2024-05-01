@@ -1,22 +1,17 @@
 #pragma once
 #include <raylib.h>
 
-typedef struct _Frame {
-    Rectangle rectangle;
-    float delay;
-    bool is_flipped;
-} Frame;
+typedef struct _Frame Frame;
+typedef struct _Animation Animation;
 
-typedef struct _Animation {
-    int size;
-    int current_frame_id;
-    float timer;
-    bool is_flipped;
-    Frame *frames;
-} Animation;
+extern struct _Animations {
+    Animation *hamster_walk;
+    Animation *hamster_idle;
+} animations;
 
-Animation *animationLoad(int size, Frame *frames);
+void animationInit();
 Rectangle *animationGetFrame(Animation *animation);
+void animationSetFlipped(Animation *animation, bool is_flipped);
 void animationReset(Animation *animation);
 void animationUpdate(Animation *animation);
-void animationUnload(Animation *animation);
+void animationUnload();

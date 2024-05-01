@@ -1,7 +1,7 @@
 #include "editor.h"
+#include "gamestate.h"
 #include "hamster.h"
 #include "keybind.h"
-#include "gamestate.h"
 #include "resources.h"
 #include "tilemap.h"
 #include <raylib.h>
@@ -13,8 +13,7 @@ int main() {
     InitWindow(1200, 800, "hamper");
     // SetExitKey(KEY_NULL);
 
-    KeyboardKey *keybinds = keybindInit();
-    resourcesInit();
+    resourcesInit(); // initializes animations as well
     hamsterInit();
     Tilemap *const test_map = tilemapLoad("resources/test_tmp");
     editorInit(test_map);
@@ -32,12 +31,14 @@ int main() {
 
         switch (gstateGet()) {
         case GSTATE_PLAYING:
-            keybindUpdate(keybinds);
+            keybindUpdate(ACTIONS_EDITOR);
+            keybindUpdate(ACTIONS_GAME);
             hamsterUpdate();
+            hamsterHandleCollisions(tilemapGetCollisions(test_map, hamsterGetRect()));
             break;
 
         case GSTATE_EDITOR:
-            keybindUpdate(keybinds);
+            keybindUpdate(ACTIONS_EDITOR);
             editorUpdate();
             break;
         }

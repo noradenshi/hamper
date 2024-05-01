@@ -6,10 +6,10 @@
 struct _WindowData window_data = {0};
 struct _Textures textures = {0};
 struct _Recs recs = {0};
-struct _Frames frames = {0};
-struct _Animations animations = {0};
 
 void resourcesInit() {
+    animationInit();
+
     textures.tileset = LoadTexture("resources/terrain.png");
     recs.tileset = malloc(sizeof(Rectangle) * textures.tileset.width *
                           textures.tileset.height);
@@ -28,25 +28,6 @@ void resourcesInit() {
 
     textures.background = LoadTexture("resources/background.png");
     textures.hamster = LoadTexture("resources/hamster.png");
-    for (int i = 0; i < IDLE_SIZE; i++) {
-        frames.hamster_idle[i].rectangle.x = i * 16;
-        frames.hamster_idle[i].rectangle.y = 0;
-        frames.hamster_idle[i].rectangle.width = 16;
-        frames.hamster_idle[i].rectangle.height = 16;
-        frames.hamster_idle[i].delay = .1f;
-    }
-    frames.hamster_idle[0].delay = 4.f; // main stance
-
-    for (int i = 0; i < WALK_SIZE; i++) {
-        frames.hamster_walk[i].rectangle.x = i * 16;
-        frames.hamster_walk[i].rectangle.y = 16;
-        frames.hamster_walk[i].rectangle.width = 16;
-        frames.hamster_walk[i].rectangle.height = 16;
-        frames.hamster_walk[i].delay = .1f;
-    }
-
-    animations.hamster_idle = animationLoad(IDLE_SIZE, frames.hamster_idle);
-    animations.hamster_walk = animationLoad(WALK_SIZE, frames.hamster_walk);
 }
 
 void windowSizeUpdate() {
@@ -57,9 +38,9 @@ void windowSizeUpdate() {
 }
 
 void resourcesUnload() {
+    animationUnload();
+
     UnloadTexture(textures.tileset);
     UnloadTexture(textures.hamster);
-    animationUnload(animations.hamster_walk);
-    animationUnload(animations.hamster_idle);
     free(recs.tileset);
 }

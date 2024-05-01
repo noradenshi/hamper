@@ -7,6 +7,18 @@
 #include <string.h>
 #include <time.h>
 
+struct _Tile {
+    Rectangle pos;
+    int src_id;
+};
+
+struct _Tilemap {
+    int capacity;
+    int size;
+    Tile *tiles;
+};
+
+Collisions collision_list;
 const Vector2 tile_origin = {0};
 
 // private
@@ -96,6 +108,22 @@ Tilemap *tilemapLoad(char *filename) {
 
     fclose(fd);
     return tilemap;
+}
+
+// WIP
+Collisions *tilemapGetCollisions(Tilemap *tilemap, Rectangle rectangle) {
+    collision_list.size = 0;
+    for (int i = 0; i < tilemap->size; i++) {
+        Rectangle rect = GetCollisionRec(rectangle, tilemap->tiles[i].pos);
+        if (rect.width != 0.f) {
+            collision_list.rec[collision_list.size] = rect;
+
+            collision_list.size++;
+            if (collision_list.size == MAX_COLLISIONS)
+                return &collision_list;
+        }
+    }
+    return &collision_list;
 }
 
 void tilemapSetTile(Tilemap *tilemap, Rectangle pos, int src_id) {
