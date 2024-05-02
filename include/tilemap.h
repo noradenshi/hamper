@@ -10,6 +10,9 @@ typedef struct _Collisions {
     int size;
 } Collisions;
 
+// DEBUG
+int tilemapGetCollisionsSize();
+
 Tilemap *tilemapEmpty();
 Tilemap *tilemapLoad(char *filename);
 Collisions *tilemapGetCollisions(Tilemap *tilemap, Rectangle rectangle);

@@ -7,7 +7,8 @@
 
 #define HAMSTER_SIZE 16
 
-Vector2 hamster_pos = {40, -36}; // center
+const Vector2 hamster_start_pos = {40, -36}; // center
+Vector2 hamster_pos = hamster_start_pos;
 Vector2 hamster_velocity = {0};
 
 short hamster_direction = 0;
@@ -33,38 +34,43 @@ void hamsterInit() {
     hamsterCameraUpdate(); // to apply correct offset
 }
 
+void hamsterReset() {
+    hamster_pos = hamster_start_pos;
+    hamster_velocity = (Vector2){0.f, 0.f};
+}
+
+void hamsterSetPosition(float x, float y) {
+    hamster_pos.x = x;
+    hamster_pos.y = y;
+}
+
 Rectangle hamsterGetRect() {
     return (Rectangle){hamster_pos.x, hamster_pos.y, 16, 16};
 }
 
+// TODO: check only one tile per axis
 void hamsterHandleCollisions(Collisions *collisions) {
     for (int i = 0; i < collisions->size; i++) {
-        if (collisions->rec[i].y == hamster_pos.y && hamster_velocity.y < 0.f) {
-            hamster_velocity.y = .0f;
-            // hamster_pos.y += collisions->rec[i].height;
-            hamster_pos.y = Lerp(
-                hamster_pos.y, hamster_pos.y + collisions->rec[i].height, .2f);
-        } else if (collisions->rec[i].y + collisions->rec[i].height ==
-                       hamster_pos.y + HAMSTER_SIZE &&
-                   hamster_velocity.y > 0.f) {
-            hamster_is_grounded = true;
-            hamster_velocity.y = .0f;
-            hamster_pos.y = Lerp(
-                hamster_pos.y, hamster_pos.y - collisions->rec[i].height, .2f);
-        } else if (collisions->rec[i].x == hamster_pos.x &&
-                   hamster_velocity.x < 0.f) {
-            hamster_velocity.x = .0f;
-            // hamster_pos.x += collisions->rec[i].width;
-            hamster_pos.x = Lerp(hamster_pos.x,
-                                 hamster_pos.x + collisions->rec[i].width, .2f);
+        // SOLVE FOR X
+        if (collisions->rec[i].width < collisions->rec[i].height) {
+            if (collisions->rec[i].x == hamster_pos.x) {
+                hamster_velocity.x = collisions->rec[i].width / 2;
+                continue;
+            }
+            hamster_velocity.x = -collisions->rec[i].width / 2;
+            continue;
+
         }
-        //        if (collisions->rec[i].x == hamster_pos.x &&
-        //                   hamster_velocity.x < 0.f) {
-        //            hamster_velocity.x = .0f;
-        //            hamster_pos.x = Lerp(hamster_pos.x,
-        //                                 hamster_pos.x +
-        //                                 collisions->rec[i].width, .2f);
-        //        }
+        // SOLVE FOR Y
+        else {
+            if (collisions->rec[i].y == hamster_pos.y) {
+                // hamster_velocity.y = collisions->rec[i].height / 2;
+                hamster_velocity.y = .5f;
+                continue;
+            }
+            hamster_is_grounded = true;
+            hamster_velocity.y = -collisions->rec[i].height / 2;
+        }
     }
     hamsterCameraUpdate();
 }

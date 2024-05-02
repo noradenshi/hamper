@@ -21,6 +21,8 @@ struct _Tilemap {
 Collisions collision_list;
 const Vector2 tile_origin = {0};
 
+int tilemapGetCollisionsSize() { return collision_list.size; }
+
 // private
 int tilemapGetTileIdAt(Tilemap *tilemap, Vector2 point) {
     for (int i = 0; i < tilemap->size; i++) {
@@ -114,6 +116,9 @@ Tilemap *tilemapLoad(char *filename) {
 Collisions *tilemapGetCollisions(Tilemap *tilemap, Rectangle rectangle) {
     collision_list.size = 0;
     for (int i = 0; i < tilemap->size; i++) {
+        if (tilemap->tiles[i].src_id == -1)
+            continue;
+
         Rectangle rect = GetCollisionRec(rectangle, tilemap->tiles[i].pos);
         if (rect.width != 0.f) {
             collision_list.rec[collision_list.size] = rect;
@@ -129,6 +134,9 @@ Collisions *tilemapGetCollisions(Tilemap *tilemap, Rectangle rectangle) {
 void tilemapSetTile(Tilemap *tilemap, Rectangle pos, int src_id) {
     int tile_id = tilemapGetTileIdAt(tilemap, (Vector2){pos.x, pos.y});
     if (tile_id == -1) {
+        if (src_id == -1)
+            return;
+
         tile_id = tilemap->size;
         tilemap->size++;
 

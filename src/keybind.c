@@ -13,12 +13,13 @@ typedef enum _GameAction {
     GAME_MOVE_LEFT,
     GAME_MOVE_RIGHT,
     GAME_JUMP,
+    GAME_RESET,
     GAME_END
 } GameAction;
 
 // KeyboardKey *global;
 KeyboardKey editor[EDITOR_END] = {KEY_G, KEY_E};
-KeyboardKey game[GAME_END] = {KEY_LEFT, KEY_RIGHT, KEY_UP};
+KeyboardKey game[GAME_END] = {KEY_LEFT, KEY_RIGHT, KEY_UP, KEY_R};
 
 void keybindUpdate(ActionSet set) {
     switch (set) {
@@ -45,5 +46,8 @@ void keybindUpdate(ActionSet set) {
 
         if (IsKeyPressed(game[GAME_JUMP]))
             hamsterJump();
+        if (IsKeyPressed(game[GAME_RESET])) {
+            hamsterReset();
+        }
     }
 }

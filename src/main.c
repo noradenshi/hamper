@@ -29,12 +29,15 @@ int main() {
             editorCameraUpdate();
         }
 
+        // TODO: switch order of hamsterUpdate and hamsterHandleCollisions
+        // to hopefully fix collision response stuff
         switch (gstateGet()) {
         case GSTATE_PLAYING:
             keybindUpdate(ACTIONS_EDITOR);
             keybindUpdate(ACTIONS_GAME);
             hamsterUpdate();
-            hamsterHandleCollisions(tilemapGetCollisions(test_map, hamsterGetRect()));
+            hamsterHandleCollisions(
+                tilemapGetCollisions(test_map, hamsterGetRect()));
             break;
 
         case GSTATE_EDITOR:
@@ -62,6 +65,9 @@ int main() {
             break;
         }
 
+        // DEBUG
+        DrawText(TextFormat("collisions: %d", tilemapGetCollisionsSize()), 0,
+                 24, 24, WHITE);
         gstateDebug(10, window_data.HEIGHT - 35, 30);
         DrawFPS(0, 0);
         EndDrawing();
