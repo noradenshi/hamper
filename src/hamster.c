@@ -45,31 +45,31 @@ void hamsterSetPosition(float x, float y) {
 }
 
 Rectangle hamsterGetRect() {
-    return (Rectangle){hamster_pos.x, hamster_pos.y, 16, 16};
+    return (Rectangle){hamster_pos.x, hamster_pos.y, HAMSTER_SIZE,
+                       HAMSTER_SIZE + 1};
 }
 
-// TODO: check only one tile per axis
 void hamsterHandleCollisions(Collisions *collisions) {
+    hamster_is_grounded = false;
     for (int i = 0; i < collisions->size; i++) {
-        // SOLVE FOR X
-        if (collisions->rec[i].width < collisions->rec[i].height) {
-            if (collisions->rec[i].x == hamster_pos.x) {
-                hamster_velocity.x = collisions->rec[i].width / 2;
-                continue;
-            }
-            hamster_velocity.x = -collisions->rec[i].width / 2;
-            continue;
-
-        }
-        // SOLVE FOR Y
-        else {
+        if (collisions->rec[i].width > collisions->rec[i].height) {
             if (collisions->rec[i].y == hamster_pos.y) {
-                // hamster_velocity.y = collisions->rec[i].height / 2;
-                hamster_velocity.y = .5f;
+                hamster_velocity.y = .0f;
+                hamster_pos.y += collisions->rec[i].height;
                 continue;
             }
             hamster_is_grounded = true;
-            hamster_velocity.y = -collisions->rec[i].height / 2;
+            hamster_velocity.y = .0f;
+            hamster_pos.y = collisions->rec[i].y - HAMSTER_SIZE;
+        } else {
+            if (collisions->rec[i].x == hamster_pos.x) {
+                hamster_velocity.x = .0f;
+                hamster_pos.x += collisions->rec[i].width;
+                continue;
+            }
+            hamster_velocity.x = .0f;
+            hamster_pos.x = collisions->rec[i].x - HAMSTER_SIZE;
+            continue;
         }
     }
     hamsterCameraUpdate();
@@ -104,13 +104,12 @@ void hamsterUpdate() {
     animationUpdate(hamster_anim);
 
     hamster_pos = Vector2Add(hamster_pos, hamster_velocity);
-    hamster_camera.target = hamster_pos;
-
-    hamster_velocity.y += hamster_gravity * GetFrameTime();
+    hamster_camera.target = Vector2Lerp(hamster_camera.target, hamster_pos, .35f);
 
     if (hamster_is_grounded) {
         hamster_velocity.x = hamster_velocity.x / grass_friction;
     } else {
+        hamster_velocity.y += hamster_gravity * GetFrameTime();
         hamster_velocity.x = hamster_velocity.x / air_friction;
     }
 }
@@ -125,4 +124,7 @@ Camera2D *hamsterGetCamera() { return &hamster_camera; }
 void hamsterDraw() {
     DrawTextureRec(textures.hamster, *animationGetFrame(hamster_anim),
                    hamster_pos, WHITE);
+
+    if (hamster_is_grounded)
+        DrawCircle(hamster_pos.x + 8.f, hamster_pos.y + 20.f, 1, GREEN);
 }

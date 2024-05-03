@@ -4,7 +4,7 @@
 typedef struct _Tile Tile;
 typedef struct _Tilemap Tilemap;
 
-#define MAX_COLLISIONS 6
+#define MAX_COLLISIONS 2
 typedef struct _Collisions {
     Rectangle rec[MAX_COLLISIONS];
     int size;

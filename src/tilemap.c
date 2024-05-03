@@ -112,7 +112,7 @@ Tilemap *tilemapLoad(char *filename) {
     return tilemap;
 }
 
-// WIP
+// TODO: merge by longer sides, not position
 Collisions *tilemapGetCollisions(Tilemap *tilemap, Rectangle rectangle) {
     collision_list.size = 0;
     for (int i = 0; i < tilemap->size; i++) {
@@ -120,12 +120,28 @@ Collisions *tilemapGetCollisions(Tilemap *tilemap, Rectangle rectangle) {
             continue;
 
         Rectangle rect = GetCollisionRec(rectangle, tilemap->tiles[i].pos);
-        if (rect.width != 0.f) {
-            collision_list.rec[collision_list.size] = rect;
+        if (rect.width > 3.f || rect.height > 3.f) {
+            if (collision_list.size > 0) {
+                if (rect.x == collision_list.rec[collision_list.size - 1].x) {
+                    collision_list.rec[collision_list.size - 1].height +=
+                        rect.height;
+                    if (rect.y < collision_list.rec[collision_list.size - 1].y)
+                        collision_list.rec[collision_list.size - 1].y = rect.y;
 
+                    continue;
+                }
+                if (rect.y == collision_list.rec[collision_list.size - 1].y) {
+                    collision_list.rec[collision_list.size - 1].width +=
+                        rect.width;
+                    if (rect.x < collision_list.rec[collision_list.size - 1].x)
+                        collision_list.rec[collision_list.size - 1].x = rect.x;
+
+                    continue;
+                }
+            }
+
+            collision_list.rec[collision_list.size] = rect;
             collision_list.size++;
-            if (collision_list.size == MAX_COLLISIONS)
-                return &collision_list;
         }
     }
     return &collision_list;
@@ -183,6 +199,10 @@ void tilemapDraw(Tilemap *tilemap) {
 
         DrawTexturePro(textures.tileset, recs.tileset[tilemap->tiles[i].src_id],
                        tilemap->tiles[i].pos, tile_origin, 0.f, WHITE);
+    }
+
+    for (int i = 0; i < collision_list.size; i++) {
+        DrawRectangleLinesEx(collision_list.rec[i], 1.f, RED);
     }
 }
 
