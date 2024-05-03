@@ -6,6 +6,7 @@ void hamsterInit();
 void hamsterReset();
 void hamsterSetPosition(float x, float y);
 void hamsterMove(short direction);
+float hamsterGetJBT();
 Rectangle hamsterGetRect();
 void hamsterHandleCollisions(Collisions *collisions);
 void hamsterJump();

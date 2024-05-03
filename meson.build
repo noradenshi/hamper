@@ -18,6 +18,7 @@ sources = [
   'src/animation.c',
   'src/keybind.c',
   'src/gamestate.c',
+  'src/alley.c',
 ]
 
 executable('exe', sources,

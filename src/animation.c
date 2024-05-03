@@ -2,8 +2,9 @@
 #include <raylib.h>
 #include <stdlib.h>
 
-#define IDLE_SIZE 5
-#define WALK_SIZE 8
+#define HAMSTER_IDLE_SIZE 5
+#define HAMSTER_WALK_SIZE 8
+#define ALLEY_IDLE_SIZE 5
 
 typedef struct _Frame {
     Rectangle rectangle;
@@ -12,8 +13,9 @@ typedef struct _Frame {
 } Frame;
 
 struct _Frames {
-    Frame hamster_idle[IDLE_SIZE];
-    Frame hamster_walk[WALK_SIZE];
+    Frame hamster_idle[HAMSTER_IDLE_SIZE];
+    Frame hamster_walk[HAMSTER_WALK_SIZE];
+    Frame alley_idle[ALLEY_IDLE_SIZE];
 } frames;
 
 struct _Animation {
@@ -29,7 +31,7 @@ struct _Animations animations = {0};
 Animation *animationLoad(int size, Frame *frames);
 
 void animationInit() {
-    for (int i = 0; i < IDLE_SIZE; i++) {
+    for (int i = 0; i < HAMSTER_IDLE_SIZE; i++) {
         frames.hamster_idle[i].rectangle.x = i * 16;
         frames.hamster_idle[i].rectangle.y = 0;
         frames.hamster_idle[i].rectangle.width = 16;
@@ -38,7 +40,7 @@ void animationInit() {
     }
     frames.hamster_idle[0].delay = 4.f; // main stance
 
-    for (int i = 0; i < WALK_SIZE; i++) {
+    for (int i = 0; i < HAMSTER_WALK_SIZE; i++) {
         frames.hamster_walk[i].rectangle.x = i * 16;
         frames.hamster_walk[i].rectangle.y = 16;
         frames.hamster_walk[i].rectangle.width = 16;
@@ -46,8 +48,18 @@ void animationInit() {
         frames.hamster_walk[i].delay = .1f;
     }
 
-    animations.hamster_idle = animationLoad(IDLE_SIZE, frames.hamster_idle);
-    animations.hamster_walk = animationLoad(WALK_SIZE, frames.hamster_walk);
+    for (int i = 0; i < ALLEY_IDLE_SIZE; i++) {
+        frames.alley_idle[i].rectangle.x = i * 16;
+        frames.alley_idle[i].rectangle.y = 80;
+        frames.alley_idle[i].rectangle.width = 16;
+        frames.alley_idle[i].rectangle.height = 16;
+        frames.alley_idle[i].delay = .1f;
+    }
+    frames.alley_idle[0].delay = 4.f; // main stance
+                                        //
+    animations.hamster_idle = animationLoad(HAMSTER_IDLE_SIZE, frames.hamster_idle);
+    animations.hamster_walk = animationLoad(HAMSTER_WALK_SIZE, frames.hamster_walk);
+    animations.alley_idle = animationLoad(ALLEY_IDLE_SIZE, frames.alley_idle);
 }
 
 Animation *animationLoad(int size, Frame *frames) {

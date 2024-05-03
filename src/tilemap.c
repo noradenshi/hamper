@@ -1,4 +1,5 @@
 #include "tilemap.h"
+#include "gamestate.h"
 #include "resources.h"
 #include <errno.h>
 #include <raylib.h>
@@ -201,8 +202,10 @@ void tilemapDraw(Tilemap *tilemap) {
                        tilemap->tiles[i].pos, tile_origin, 0.f, WHITE);
     }
 
-    for (int i = 0; i < collision_list.size; i++) {
-        DrawRectangleLinesEx(collision_list.rec[i], 1.f, RED);
+    if (IS_DEBUG) {
+        for (int i = 0; i < collision_list.size; i++) {
+            DrawRectangleLinesEx(collision_list.rec[i], 1.f, RED);
+        }
     }
 }
 

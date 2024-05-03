@@ -5,8 +5,9 @@ typedef struct _Frame Frame;
 typedef struct _Animation Animation;
 
 extern struct _Animations {
-    Animation *hamster_walk;
     Animation *hamster_idle;
+    Animation *hamster_walk;
+    Animation *alley_idle;
 } animations;
 
 void animationInit();

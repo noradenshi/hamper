@@ -1,5 +1,6 @@
 #include "hamster.h"
 #include "animation.h"
+#include "gamestate.h"
 #include "resources.h"
 #include "tilemap.h"
 #include <raylib.h>
@@ -15,6 +16,9 @@ short hamster_direction = 0;
 float hamster_speed = 25.f;
 float hamster_jump_force = 4.f;
 float hamster_gravity = 8.f;
+
+const float hamster_jump_buffer_amount = .25f;
+float hamster_jump_buffer_timer = 0.f;
 
 bool hamster_is_flipped = false;
 bool hamster_is_grounded = false;
@@ -43,6 +47,8 @@ void hamsterSetPosition(float x, float y) {
     hamster_pos.x = x;
     hamster_pos.y = y;
 }
+
+float hamsterGetJBT() { return hamster_jump_buffer_timer; }
 
 Rectangle hamsterGetRect() {
     return (Rectangle){hamster_pos.x, hamster_pos.y, HAMSTER_SIZE,
@@ -90,7 +96,10 @@ void hamsterJump() {
     if (hamster_is_grounded) {
         hamster_is_grounded = false;
         hamster_velocity.y = -hamster_jump_force;
+        return;
     }
+
+    hamster_jump_buffer_timer = hamster_jump_buffer_amount;
 }
 
 // do the movement, then physics
@@ -103,15 +112,23 @@ void hamsterUpdate() {
     }
     animationUpdate(hamster_anim);
 
-    hamster_pos = Vector2Add(hamster_pos, hamster_velocity);
-    hamster_camera.target = Vector2Lerp(hamster_camera.target, hamster_pos, .35f);
+    if (hamster_jump_buffer_timer > 0.f) {
+        hamster_jump_buffer_timer -= GetFrameTime() * 1.f;
+    }
 
     if (hamster_is_grounded) {
+        if (hamster_jump_buffer_timer > 0.f)
+            hamsterJump();
+        hamster_jump_buffer_timer = 0.f;
         hamster_velocity.x = hamster_velocity.x / grass_friction;
     } else {
         hamster_velocity.y += hamster_gravity * GetFrameTime();
         hamster_velocity.x = hamster_velocity.x / air_friction;
     }
+
+    hamster_pos = Vector2Add(hamster_pos, hamster_velocity);
+    hamster_camera.target =
+        Vector2Lerp(hamster_camera.target, hamster_pos, .35f);
 }
 
 void hamsterCameraUpdate() {
@@ -125,6 +142,8 @@ void hamsterDraw() {
     DrawTextureRec(textures.hamster, *animationGetFrame(hamster_anim),
                    hamster_pos, WHITE);
 
-    if (hamster_is_grounded)
-        DrawCircle(hamster_pos.x + 8.f, hamster_pos.y + 20.f, 1, GREEN);
+    if (IS_DEBUG) {
+        if (hamster_is_grounded)
+            DrawCircle(hamster_pos.x + 8.f, hamster_pos.y + 20.f, 1, GREEN);
+    }
 }

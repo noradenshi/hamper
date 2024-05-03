@@ -28,6 +28,7 @@ void resourcesInit() {
 
     textures.background = LoadTexture("resources/background.png");
     textures.hamster = LoadTexture("resources/hamster.png");
+    textures.cursor = LoadTexture("resources/cursor.png");
 }
 
 void windowSizeUpdate() {
@@ -42,5 +43,6 @@ void resourcesUnload() {
 
     UnloadTexture(textures.tileset);
     UnloadTexture(textures.hamster);
+    UnloadTexture(textures.cursor);
     free(recs.tileset);
 }

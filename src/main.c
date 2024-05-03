@@ -1,3 +1,4 @@
+#include "alley.h"
 #include "editor.h"
 #include "gamestate.h"
 #include "hamster.h"
@@ -8,6 +9,7 @@
 #include <raymath.h>
 #include <rlgl.h>
 
+// TODO: level manager
 int main() {
     SetConfigFlags(FLAG_WINDOW_RESIZABLE);
     InitWindow(1200, 800, "hamper");
@@ -20,6 +22,7 @@ int main() {
 
     SetTargetFPS(60);
     gstateSet(GSTATE_PLAYING);
+    alleySetTarget(GetScreenToWorld2D(GetMousePosition(), *hamsterGetCamera()));
 
     while (!WindowShouldClose()) {
         if (GetScreenHeight() != window_data.HEIGHT ||
@@ -29,8 +32,8 @@ int main() {
             editorCameraUpdate();
         }
 
-        // TODO: switch order of hamsterUpdate and hamsterHandleCollisions
-        // to hopefully fix collision response stuff
+        keybindUpdate(ACTIONS_GLOBAL);
+
         switch (gstateGet()) {
         case GSTATE_PLAYING:
             keybindUpdate(ACTIONS_EDITOR);
@@ -38,6 +41,10 @@ int main() {
             hamsterUpdate();
             hamsterHandleCollisions(
                 tilemapGetCollisions(test_map, hamsterGetRect()));
+            if (GetMouseDelta().x != .0f || GetMouseDelta().y != .0f)
+                alleySetTarget(GetScreenToWorld2D(GetMousePosition(),
+                                                  *hamsterGetCamera()));
+            alleyUpdate();
             break;
 
         case GSTATE_EDITOR:
@@ -47,13 +54,14 @@ int main() {
         }
 
         BeginDrawing();
-        ClearBackground(BLACK);
+        ClearBackground((Color){90, 110, 120, 255});
 
         switch (gstateGet()) {
         case GSTATE_PLAYING:
             BeginMode2D(*hamsterGetCamera());
             tilemapDraw(test_map);
             hamsterDraw();
+            alleyDraw();
             EndMode2D();
             break;
 
@@ -61,15 +69,19 @@ int main() {
             BeginMode2D(*editorGetCamera());
             tilemapDraw(test_map);
             hamsterDraw();
+            alleyDraw();
             editorDrawEnd2D();
             break;
         }
 
-        // DEBUG
-        DrawText(TextFormat("collisions: %d", tilemapGetCollisionsSize()), 0,
-                 24, 24, WHITE);
-        gstateDebug(10, window_data.HEIGHT - 35, 30);
-        DrawFPS(0, 0);
+        if (IS_DEBUG) {
+            DrawText(TextFormat("jump buffer: %.4f", hamsterGetJBT()), 0, 48,
+                     24, WHITE);
+            DrawText(TextFormat("collisions: %d", tilemapGetCollisionsSize()),
+                     0, 24, 24, WHITE);
+            gstateDebug(10, window_data.HEIGHT - 35, 30);
+            DrawFPS(0, 0);
+        }
         EndDrawing();
     }
 
