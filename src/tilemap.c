@@ -141,6 +141,9 @@ Collisions *tilemapGetCollisions(Tilemap *tilemap, Rectangle rectangle) {
                 }
             }
 
+            if (collision_list.size == 2)
+                break;
+
             collision_list.rec[collision_list.size] = rect;
             collision_list.size++;
         }

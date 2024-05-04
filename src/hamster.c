@@ -102,7 +102,6 @@ void hamsterJump() {
     hamster_jump_buffer_timer = hamster_jump_buffer_amount;
 }
 
-// do the movement, then physics
 void hamsterUpdate() {
     if (hamster_direction == 0) {
         hamster_anim = animations.hamster_idle;
@@ -139,7 +138,7 @@ void hamsterCameraUpdate() {
 Camera2D *hamsterGetCamera() { return &hamster_camera; }
 
 void hamsterDraw() {
-    DrawTextureRec(textures.hamster, *animationGetFrame(hamster_anim),
+    DrawTextureRec(textures.players, *animationGetFrame(hamster_anim),
                    hamster_pos, WHITE);
 
     if (IS_DEBUG) {

@@ -27,7 +27,7 @@ void resourcesInit() {
     }
 
     textures.background = LoadTexture("resources/background.png");
-    textures.hamster = LoadTexture("resources/hamster.png");
+    textures.players = LoadTexture("resources/hamster.png");
     textures.cursor = LoadTexture("resources/cursor.png");
 }
 
@@ -42,7 +42,7 @@ void resourcesUnload() {
     animationUnload();
 
     UnloadTexture(textures.tileset);
-    UnloadTexture(textures.hamster);
+    UnloadTexture(textures.players);
     UnloadTexture(textures.cursor);
     free(recs.tileset);
 }

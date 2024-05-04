@@ -41,10 +41,13 @@ int main() {
             hamsterUpdate();
             hamsterHandleCollisions(
                 tilemapGetCollisions(test_map, hamsterGetRect()));
+
             if (GetMouseDelta().x != .0f || GetMouseDelta().y != .0f)
                 alleySetTarget(GetScreenToWorld2D(GetMousePosition(),
                                                   *hamsterGetCamera()));
             alleyUpdate();
+            alleyHandleCollisions(
+                tilemapGetCollisions(test_map, alleyLineGetRect()));
             break;
 
         case GSTATE_EDITOR:
@@ -75,13 +78,21 @@ int main() {
         }
 
         if (IS_DEBUG) {
-            DrawText(TextFormat("jump buffer: %.4f", hamsterGetJBT()), 0, 48,
+            DrawText(TextFormat("jump buffer: %.4f", hamsterGetJBT()), 5, 48,
                      24, WHITE);
             DrawText(TextFormat("collisions: %d", tilemapGetCollisionsSize()),
-                     0, 24, 24, WHITE);
-            gstateDebug(10, window_data.HEIGHT - 35, 30);
-            DrawFPS(0, 0);
+                     5, 24, 24, WHITE);
+            DrawText(TextFormat("point count: %d", alleyGetPointCount()), 5,
+                     24 * 3, 24, WHITE);
+
+            DrawRectangle(10, 24 * 4 + 10, 128, 8, WHITE);
+            DrawRectangle(
+                10, 24 * 4 + 10,
+                128 * ((float)alleyGetPointCount() / alleyGetMaxPointCount()),
+                8, BLACK);
         }
+        gstateDebug(10, window_data.HEIGHT - 35, 30);
+        DrawFPS(0, 0);
         EndDrawing();
     }
 
