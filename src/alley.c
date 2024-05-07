@@ -1,12 +1,14 @@
 #include "alley.h"
 #include "animation.h"
 #include "resources.h"
+#include <math.h>
 #include <raylib.h>
 #include <raymath.h>
 
 #define ALLEY_SIZE 16
 #define ALLEY_CURSOR_SIZE 2
-#define MAX_POINTS 64
+#define LINE_MAX_POINTS 2
+#define LINE_MAX_LENGTH 50.f
 
 Vector2 alley_pos = {0};
 Vector2 alley_target_pos = {0};
@@ -15,21 +17,14 @@ Vector2 alley_origin = {0};
 Vector2 alley_target_origin = {0};
 
 int point_iterator = 0;
-Vector2 points[MAX_POINTS];
-bool alley_is_line_initialized = false;
-
-struct _AlleyLine {
-    float *x;
-    float *y;
-    float *width;
-    float *height;
-} alleyline;
+Vector2 points[LINE_MAX_POINTS];
+Vector2 alley_line_normal = {0};
 
 Rectangle alley_target_rec =
     (Rectangle){0, 0, ALLEY_CURSOR_SIZE, ALLEY_CURSOR_SIZE};
 
 int alleyGetPointCount() { return point_iterator; }
-int alleyGetMaxPointCount() { return MAX_POINTS; }
+int alleyGetMaxPointCount() { return LINE_MAX_POINTS; }
 
 void alleySetTarget(Vector2 mouse_pos) {
     if (alley_pos.x > mouse_pos.x) {
@@ -49,67 +44,39 @@ void alleySetTarget(Vector2 mouse_pos) {
     alley_target_pos = mouse_pos;
 }
 
-float absf(float x) { return (x < 0) ? -x : x; }
-
-Rectangle alleyLineGetRect() {
-    if (alley_is_line_initialized)
-        return (Rectangle){*alleyline.x - 15.f, *alleyline.y - 15.f,
-                           absf(*alleyline.width - *alleyline.x) + 30.f,
-                           absf(*alleyline.height - *alleyline.y) + 30.f};
-    return (Rectangle){0};
-}
-
-void alleyHandleCollisions(Collisions *collisions) {
-    for (int i = 0; i < point_iterator; i++) {
-        bool is_falling = true;
-        for (int j = 0; j < collisions->size; j++) {
-            if (CheckCollisionPointRec(points[i], collisions->rec[j]))
-                is_falling = false;
-        }
-        if (is_falling) {
-            points[i].y += 32.f * GetFrameTime();
-        }
-    }
-}
-
 void alleyUpdate() {
-    alley_origin = Vector2Lerp(alley_origin, alley_target_origin, .1f);
+    alley_origin = Vector2Lerp(alley_origin, alley_target_origin, 0.1f);
     alley_pos = Vector2Lerp(alley_pos, alley_target_pos, 0.1f);
     animationUpdate(animations.alley_idle);
 
     if (IsMouseButtonPressed(0)) {
-        point_iterator = 0;
-        alleyline.x = &points[0].x;
-        alleyline.y = &points[0].y;
-        alleyline.width = &points[0].x;
-        alleyline.height = &points[0].y;
-        alley_is_line_initialized = true;
+        point_iterator = 1;
+        points[0] = alley_target_pos;
     }
-    if (IsMouseButtonDown(0) && point_iterator != MAX_POINTS) {
-        if (point_iterator == 0 || Vector2Distance(points[point_iterator - 1],
-                                                   alley_target_pos) > 2.f) {
-            points[point_iterator] = alley_target_pos;
+    if (IsMouseButtonDown(0)) {
+        point_iterator = 2;
+        points[1] = alley_target_pos;
 
-            if (alley_target_pos.x < *alleyline.x)
-                alleyline.x = &points[point_iterator].x;
-            else if (alley_target_pos.x > *alleyline.width)
-                alleyline.width = &points[point_iterator].x;
-
-            if (alley_target_pos.y < *alleyline.y)
-                alleyline.y = &points[point_iterator].y;
-            else if (alley_target_pos.y > *alleyline.height)
-                alleyline.height = &points[point_iterator].y;
-
-            point_iterator++;
+        if (Vector2Distance(points[0], points[1]) > LINE_MAX_LENGTH) {
+            const float mouse_distance =
+                (points[1].y - points[0].y) / (points[1].x - points[0].x);
+            points[1].x =
+                sqrtf(1 / (pow(mouse_distance, 2) + 1)) * LINE_MAX_LENGTH;
+            points[1].x *= (alley_target_pos.x > points[0].x) ? 1 : -1;
+            points[1].x += points[0].x;
+            points[1].y =
+                mouse_distance * (points[1].x - points[0].x) + points[0].y;
         }
     }
 }
 
 void alleyDraw() {
-    DrawRectangleLinesEx(alleyLineGetRect(), 1.f, BLUE);
-    DrawCircleV(points[0], 1.2f, WHITE);
-    DrawCircleV(points[point_iterator - 1], 1.2f, WHITE);
-    DrawSplineCatmullRom(points, point_iterator, 1.f, WHITE);
+    if (point_iterator != 0) {
+        //        DrawCircleV(points[0], 1.2f, WHITE);
+        //        DrawCircleV(points[1], 1.2f, WHITE);
+        DrawSplineLinear(points, point_iterator, 1.f, WHITE);
+        DrawLineV(points[0], points[1], YELLOW);
+    }
 
     DrawTexturePro(
         textures.players, *animationGetFrame(animations.alley_idle),
@@ -119,4 +86,21 @@ void alleyDraw() {
                    (Rectangle){alley_target_pos.x, alley_target_pos.y,
                                ALLEY_CURSOR_SIZE, ALLEY_CURSOR_SIZE},
                    alley_target_offset, 0.f, WHITE);
+}
+
+Vector2 alleyLineGetNormal() {
+    if (points[0].x > points[1].x) {
+        alley_line_normal.x = -(points[1].y - points[0].y);
+        alley_line_normal.y = (points[1].x - points[0].x);
+    } else {
+        alley_line_normal.x = (points[1].y - points[0].y);
+        alley_line_normal.y = -(points[1].x - points[0].x);
+    }
+    return Vector2Normalize(alley_line_normal);
+}
+
+bool alleyLineCheckCollisions(Vector2 *point) {
+    if (point_iterator < 2)
+        return false;
+    return CheckCollisionPointLine(*point, points[0], points[1], 4);
 }

@@ -1,6 +1,7 @@
 #include "keybind.h"
 #include "gamestate.h"
 #include "hamster.h"
+#include "editor.h"
 #include <raylib.h>
 
 typedef enum _GlobalAction {
@@ -12,6 +13,7 @@ typedef enum _GlobalAction {
 typedef enum _EditorAction {
     EDITOR_PLAYING,
     EDITOR_EDITOR,
+    EDITOR_SAVE,
     EDITOR_END
 } EditorAction;
 
@@ -24,8 +26,9 @@ typedef enum _GameAction {
 } GameAction;
 
 KeyboardKey global[GLOBAL_END] = {KEY_F3, KEY_ESCAPE};
-KeyboardKey editor[EDITOR_END] = {KEY_G, KEY_E};
-KeyboardKey game[GAME_END] = {KEY_LEFT, KEY_RIGHT, KEY_UP, KEY_R};
+KeyboardKey editor[EDITOR_END] = {KEY_G, KEY_E, KEY_S};
+//KeyboardKey game[GAME_END] = {KEY_LEFT, KEY_RIGHT, KEY_UP, KEY_R};
+KeyboardKey game[GAME_END] = {KEY_A, KEY_D, KEY_W, KEY_R};
 
 void keybindUpdate(ActionSet set) {
     switch (set) {
@@ -57,6 +60,9 @@ void keybindUpdate(ActionSet set) {
             case EDITOR_EDITOR:
                 gstateSet(GSTATE_EDITOR);
                 break;
+            case EDITOR_SAVE:
+                editorSave();
+                break;
             }
         }
         break;
@@ -66,7 +72,8 @@ void keybindUpdate(ActionSet set) {
         hamsterMove(-IsKeyDown(game[GAME_MOVE_LEFT]) +
                     IsKeyDown(game[GAME_MOVE_RIGHT]));
 
-        if (IsKeyPressed(game[GAME_JUMP]))
+        if (IsKeyPressed(game[GAME_JUMP]) ||
+            IsGamepadButtonPressed(0, GAMEPAD_BUTTON_RIGHT_FACE_DOWN))
             hamsterJump();
         if (IsKeyPressed(game[GAME_RESET])) {
             hamsterReset();

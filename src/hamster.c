@@ -1,4 +1,5 @@
 #include "hamster.h"
+#include "alley.h"
 #include "animation.h"
 #include "gamestate.h"
 #include "resources.h"
@@ -11,12 +12,16 @@
 const Vector2 hamster_start_pos = {40, -36}; // center
 Vector2 hamster_pos = hamster_start_pos;
 Vector2 hamster_velocity = {0};
+Vector2 hamster_direction = {0};
 
-short hamster_direction = 0;
+Vector2 hamster_ground_check;
+
+short hamster_horizontal = 0;
 float hamster_speed = 25.f;
 float hamster_jump_force = 4.f;
 float hamster_gravity = 8.f;
 
+const float hamster_max_speed = 100.f;
 const float hamster_jump_buffer_amount = .25f;
 float hamster_jump_buffer_timer = 0.f;
 
@@ -34,7 +39,7 @@ void hamsterInit() {
     hamster_anim = animations.hamster_idle;
 
     hamster_camera =
-        (Camera2D){.zoom = 4.21f, .target = hamster_pos, .rotation = 0.f};
+        (Camera2D){.zoom = 3.8f, .target = hamster_pos, .rotation = 0.f};
     hamsterCameraUpdate(); // to apply correct offset
 }
 
@@ -82,14 +87,13 @@ void hamsterHandleCollisions(Collisions *collisions) {
 }
 
 void hamsterMove(short direction) {
-    hamster_direction = direction;
+    hamster_horizontal = direction;
     if (direction != 0) {
         hamster_is_flipped = (direction == -1);
         animationSetFlipped(hamster_anim, hamster_is_flipped);
     }
 
-    hamster_velocity.x += hamster_direction * hamster_speed *
-                          (IsKeyDown(KEY_LEFT_SHIFT) + 1) * GetFrameTime();
+    hamster_velocity.x += hamster_horizontal * hamster_speed * GetFrameTime();
 }
 
 void hamsterJump() {
@@ -103,7 +107,7 @@ void hamsterJump() {
 }
 
 void hamsterUpdate() {
-    if (hamster_direction == 0) {
+    if (hamster_horizontal == 0) {
         hamster_anim = animations.hamster_idle;
     } else if (hamster_anim != animations.hamster_walk) {
         hamster_anim = animations.hamster_walk;
@@ -115,6 +119,19 @@ void hamsterUpdate() {
         hamster_jump_buffer_timer -= GetFrameTime() * 1.f;
     }
 
+    hamster_ground_check = (Vector2){hamster_pos.x + HAMSTER_SIZE / 2.f,
+                                     hamster_pos.y + HAMSTER_SIZE};
+    if (hamster_velocity.y >= 0.f &&
+        alleyLineCheckCollisions(&hamster_ground_check)) {
+
+        hamster_is_grounded = true;
+
+        hamster_velocity =
+            Vector2Reflect(hamster_velocity, alleyLineGetNormal());
+        //            if (hamster_velocity.y > -4.f)
+        //                hamster_velocity.y = -4.f;
+    }
+
     if (hamster_is_grounded) {
         if (hamster_jump_buffer_timer > 0.f)
             hamsterJump();
@@ -124,6 +141,9 @@ void hamsterUpdate() {
         hamster_velocity.y += hamster_gravity * GetFrameTime();
         hamster_velocity.x = hamster_velocity.x / air_friction;
     }
+
+    hamster_velocity = Vector2ClampValue(hamster_velocity, -hamster_max_speed,
+                                         hamster_max_speed);
 
     hamster_pos = Vector2Add(hamster_pos, hamster_velocity);
     hamster_camera.target =
@@ -142,6 +162,7 @@ void hamsterDraw() {
                    hamster_pos, WHITE);
 
     if (IS_DEBUG) {
+        DrawCircleV(hamster_ground_check, 1.f, BLUE);
         if (hamster_is_grounded)
             DrawCircle(hamster_pos.x + 8.f, hamster_pos.y + 20.f, 1, GREEN);
     }

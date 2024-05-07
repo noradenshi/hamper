@@ -26,6 +26,10 @@ Tilemap *active_tilemap;
 
 Camera2D *editorGetCamera() { return &editor_camera; }
 
+void editorSave(){
+    tilemapSave(active_tilemap, "resources/test_tmp");
+}
+
 void editorInit(Tilemap *tilemap) { active_tilemap = tilemap; }
 
 void editorCameraUpdate() { editor_camera.offset = window_data.CENTER; }

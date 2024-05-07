@@ -7,7 +7,7 @@ project('hamper', 'c',
 
 cc = meson.get_compiler('c')
 
-deps = [ cc.find_library('raylib') ]
+deps = [ cc.find_library('raylib'), cc.find_library('m') ]
 
 sources = [
   'src/main.c',

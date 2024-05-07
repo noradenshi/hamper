@@ -42,12 +42,10 @@ int main() {
             hamsterHandleCollisions(
                 tilemapGetCollisions(test_map, hamsterGetRect()));
 
-            if (GetMouseDelta().x != .0f || GetMouseDelta().y != .0f)
-                alleySetTarget(GetScreenToWorld2D(GetMousePosition(),
-                                                  *hamsterGetCamera()));
+            // if (GetMouseDelta().x != .0f || GetMouseDelta().y != .0f)
+            alleySetTarget(
+                GetScreenToWorld2D(GetMousePosition(), *hamsterGetCamera()));
             alleyUpdate();
-            alleyHandleCollisions(
-                tilemapGetCollisions(test_map, alleyLineGetRect()));
             break;
 
         case GSTATE_EDITOR:
