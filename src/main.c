@@ -76,19 +76,22 @@ int main() {
         }
 
         if (IS_DEBUG) {
-            DrawText(TextFormat("jump buffer: %.4f", hamsterGetJBT()), 5, 48,
-                     24, WHITE);
             DrawText(TextFormat("collisions: %d", tilemapGetCollisionsSize()),
                      5, 24, 24, WHITE);
-            DrawText(TextFormat("point count: %d", alleyGetPointCount()), 5,
-                     24 * 3, 24, WHITE);
+            DrawText(
+                TextFormat("jump buffer: %.4f", hamsterGetJumpBufferTime()), 5,
+                24 * 2, 24, WHITE);
+            DrawText(
+                TextFormat("ground buffer: %.4f", hamsterGetGroundBufferTime()),
+                5, 24 * 3, 24, WHITE);
 
-            DrawRectangle(10, 24 * 4 + 10, 128, 8, WHITE);
-            DrawRectangle(
-                10, 24 * 4 + 10,
-                128 * ((float)alleyGetPointCount() / alleyGetMaxPointCount()),
-                8, BLACK);
+            //            DrawRectangle(10, 24 * 4 + 10, 128, 8, WHITE);
+            //            DrawRectangle(
+            //                10, 24 * 4 + 10,
+            //                128 * ((float)alleyGetPointCount() /
+            //                alleyGetMaxPointCount()), 8, BLACK);
         }
+
         gstateDebug(10, window_data.HEIGHT - 35, 30);
         DrawFPS(0, 0);
         EndDrawing();

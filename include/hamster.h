@@ -6,10 +6,13 @@ void hamsterInit();
 void hamsterReset();
 void hamsterSetPosition(float x, float y);
 void hamsterMove(short direction);
-float hamsterGetJBT();
+void hamsterJump();
+
+float hamsterGetJumpBufferTime();
+float hamsterGetGroundBufferTime();
+
 Rectangle hamsterGetRect();
 void hamsterHandleCollisions(Collisions *collisions);
-void hamsterJump();
 void hamsterUpdate();
 void hamsterCameraUpdate();
 Camera2D *hamsterGetCamera();
