@@ -91,6 +91,7 @@ Vector2 alleyLineGetNormal() {
     return Vector2Normalize(alley_line_normal);
 }
 
+// TODO: change to line-line collision, so player cannot go through the line
 bool alleyLineCheckCollisions(Vector2 *point) {
     return CheckCollisionPointLine(*point, points[0], points[1], 4);
 }

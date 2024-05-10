@@ -2,7 +2,7 @@
 #include <raylib.h>
 #include "tilemap.h"
 
-void editorInit(Tilemap *tilemap);
+void editorSetTilemap(Tilemap *tilemap);
 Camera2D *editorGetCamera();
 void editorCameraUpdate();
 void editorUpdate();

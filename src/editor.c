@@ -30,7 +30,7 @@ void editorSave(){
     tilemapSave(active_tilemap, "resources/test_tmp");
 }
 
-void editorInit(Tilemap *tilemap) { active_tilemap = tilemap; }
+void editorSetTilemap(Tilemap *tilemap) { active_tilemap = tilemap; }
 
 void editorCameraUpdate() { editor_camera.offset = window_data.CENTER; }
 

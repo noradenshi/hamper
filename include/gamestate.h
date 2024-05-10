@@ -1,7 +1,9 @@
 #pragma once
 #include <raylib.h>
 
+// more like scenes really
 typedef enum _GameState {
+    GSTATE_MENU,
     GSTATE_PLAYING,
     GSTATE_EDITOR,
 } GameState;

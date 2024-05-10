@@ -2,27 +2,26 @@
 #include "editor.h"
 #include "gamestate.h"
 #include "hamster.h"
-#include "keybind.h"
+#include "keybinds.h"
+#include "levels.h"
+#include "menu.h"
 #include "resources.h"
 #include "tilemap.h"
 #include <raylib.h>
 #include <raymath.h>
 #include <rlgl.h>
 
-// TODO: level manager
 int main() {
     SetConfigFlags(FLAG_WINDOW_RESIZABLE);
     InitWindow(1200, 800, "hamper");
-    // SetExitKey(KEY_NULL);
+    SetExitKey(KEY_NULL);
 
     resourcesInit(); // initializes animations as well
     hamsterInit();
-    Tilemap *const test_map = tilemapLoad("resources/test_tmp");
-    editorInit(test_map);
+    levelsLoad();
 
     SetTargetFPS(60);
-    gstateSet(GSTATE_PLAYING);
-    alleySetTarget(GetScreenToWorld2D(GetMousePosition(), *hamsterGetCamera()));
+    gstateSet(GSTATE_MENU);
 
     while (!WindowShouldClose()) {
         if (GetScreenHeight() != window_data.HEIGHT ||
@@ -35,12 +34,15 @@ int main() {
         keybindUpdate(ACTIONS_GLOBAL);
 
         switch (gstateGet()) {
+        case GSTATE_MENU:
+            // TODO;
+            break;
         case GSTATE_PLAYING:
             keybindUpdate(ACTIONS_EDITOR);
             keybindUpdate(ACTIONS_GAME);
             hamsterUpdate();
             hamsterHandleCollisions(
-                tilemapGetCollisions(test_map, hamsterGetRect()));
+                tilemapGetCollisions(levelsGet(), hamsterGetRect()));
 
             // if (GetMouseDelta().x != .0f || GetMouseDelta().y != .0f)
             alleySetTarget(
@@ -58,9 +60,12 @@ int main() {
         ClearBackground((Color){90, 110, 120, 255});
 
         switch (gstateGet()) {
+        case GSTATE_MENU:
+            menuDraw();
+            break;
         case GSTATE_PLAYING:
             BeginMode2D(*hamsterGetCamera());
-            tilemapDraw(test_map);
+            tilemapDraw(levelsGet());
             hamsterDraw();
             alleyDraw();
             EndMode2D();
@@ -68,14 +73,14 @@ int main() {
 
         case GSTATE_EDITOR:
             BeginMode2D(*editorGetCamera());
-            tilemapDraw(test_map);
+            tilemapDraw(levelsGet());
             hamsterDraw();
             alleyDraw();
             editorDrawEnd2D();
             break;
         }
 
-        if (IS_DEBUG) {
+        if (IS_DEBUG && gstateGet() != GSTATE_MENU) {
             DrawText(TextFormat("collisions: %d", tilemapGetCollisionsSize()),
                      5, 24, 24, WHITE);
             DrawText(
@@ -90,14 +95,15 @@ int main() {
             //                10, 24 * 4 + 10,
             //                128 * ((float)alleyGetPointCount() /
             //                alleyGetMaxPointCount()), 8, BLACK);
+            gstateDebug(10, window_data.HEIGHT - 35, 30);
         }
 
-        gstateDebug(10, window_data.HEIGHT - 35, 30);
         DrawFPS(0, 0);
         EndDrawing();
     }
 
-    tilemapUnload(test_map);
+    levelsUnload();
     resourcesUnload();
+    CloseWindow();
     return 0;
 }

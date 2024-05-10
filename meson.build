@@ -16,9 +16,11 @@ sources = [
   'src/resources.c',
   'src/tilemap.c',
   'src/animation.c',
-  'src/keybind.c',
+  'src/keybinds.c',
   'src/gamestate.c',
   'src/alley.c',
+  'src/levels.c',
+  'src/menu.c',
 ]
 
 executable('exe', sources,

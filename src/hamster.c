@@ -96,6 +96,7 @@ void hamsterHandleCollisions(Collisions *collisions) {
         hamster_velocity =
             Vector2Reflect(hamster_velocity, alleyLineGetNormal());
 
+        // TODO: first bounce should go higher
         hamster_velocity.y *= .6f;
         if (hamster_velocity.y > 0.f)
             hamster_velocity.y = -.1f;
