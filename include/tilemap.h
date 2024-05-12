@@ -14,9 +14,9 @@ typedef struct _Collisions {
 int tilemapGetCollisionsSize();
 
 Tilemap *tilemapEmpty();
-Tilemap *tilemapLoad(char *filename);
+Tilemap *tilemapLoad(const char *filename);
 Collisions *tilemapGetCollisions(Tilemap *tilemap, Rectangle rectangle);
 void tilemapSetTile(Tilemap *tilemap, Rectangle pos, int src_id);
-void tilemapSave(Tilemap *tilemap, char *filename);
+void tilemapSave(Tilemap *tilemap, const char *filename);
 void tilemapDraw(Tilemap *tilemap);
 void tilemapUnload(Tilemap *tilemap);

@@ -129,6 +129,7 @@ void hamsterJump() {
 void hamsterUpdate() {
     if (hamster_horizontal == 0) {
         hamster_anim = animations.hamster_idle;
+        StopSound(sounds.walk_grass);
     } else if (hamster_anim != animations.hamster_walk) {
         hamster_anim = animations.hamster_walk;
         animationReset(hamster_anim);
@@ -140,6 +141,9 @@ void hamsterUpdate() {
     }
 
     if (hamster_is_grounded) {
+        if (hamster_horizontal != 0 && !IsSoundPlaying(sounds.walk_grass))
+            PlaySound(sounds.walk_grass);
+
         if (hamster_jump_buffer_timer > 0.f)
             hamsterJump();
 

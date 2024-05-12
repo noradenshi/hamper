@@ -53,7 +53,7 @@ Tilemap *tilemapEmpty() {
     return tilemap;
 }
 
-Tilemap *tilemapLoad(char *filename) {
+Tilemap *tilemapLoad(const char *filename) {
     Tilemap *tilemap = malloc(sizeof(Tilemap));
     if (!tilemap) {
         TraceLog(LOG_ERROR, "Allocating memory failed!");
@@ -73,6 +73,11 @@ Tilemap *tilemapLoad(char *filename) {
             size_to_load++;
     }
     rewind(fd);
+
+    if (size_to_load == 0) {
+        TraceLog(LOG_ERROR, "Loading empty file: %s", filename);
+        abort();
+    }
 
     tilemap->size = 0;
     tilemap->capacity = size_to_load * 2;
@@ -178,7 +183,7 @@ void tilemapSetTile(Tilemap *tilemap, Rectangle pos, int src_id) {
     tilemap->tiles[tile_id].src_id = src_id;
 }
 
-void tilemapSave(Tilemap *tilemap, char *filename) {
+void tilemapSave(Tilemap *tilemap, const char *filename) {
     FILE *fd = fopen(filename, "w");
     if (!fd) {
         TraceLog(LOG_ERROR, "Opening %s: %s", filename, strerror(errno));

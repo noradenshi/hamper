@@ -20,6 +20,12 @@ extern struct _Recs {
     Rectangle *tileset;
 } recs;
 
+extern struct _Sounds {
+    Sound walk_grass;
+    Sound draw1;
+    Sound draw2;
+} sounds;
+
 void resourcesInit();
 void windowSizeUpdate();
 void resourcesUnload();

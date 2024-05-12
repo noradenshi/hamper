@@ -6,11 +6,12 @@
 struct _WindowData window_data = {0};
 struct _Textures textures = {0};
 struct _Recs recs = {0};
+struct _Sounds sounds = {0};
 
 void resourcesInit() {
     animationInit();
 
-    textures.tileset = LoadTexture("resources/terrain.png");
+    textures.tileset = LoadTexture("resources/textures/terrain.png");
     recs.tileset = malloc(sizeof(Rectangle) * textures.tileset.width *
                           textures.tileset.height);
     if (!recs.tileset) {
@@ -26,9 +27,14 @@ void resourcesInit() {
             (int)(i / textures.tileset.width) * recs.tileset[i].height;
     }
 
-    textures.background = LoadTexture("resources/background.png");
-    textures.players = LoadTexture("resources/hamster.png");
-    textures.cursor = LoadTexture("resources/cursor.png");
+    textures.background = LoadTexture("resources/textures/background.png");
+    textures.players = LoadTexture("resources/textures/hamster.png");
+    textures.cursor = LoadTexture("resources/textures/cursor.png");
+    
+    sounds.walk_grass = LoadSound("resources/sounds/walk.wav");
+    sounds.draw1 = LoadSound("resources/sounds/draw1.wav");
+    sounds.draw2 = LoadSound("resources/sounds/draw2.wav");
+    SetSoundPitch(sounds.walk_grass, 1.2f);
 }
 
 void windowSizeUpdate() {

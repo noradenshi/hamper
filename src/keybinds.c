@@ -3,20 +3,20 @@
 #include "gamestate.h"
 #include "hamster.h"
 #include "levels.h"
-#include "resources.h"
 #include <raylib.h>
-#include <stdlib.h>
 
 typedef enum _GlobalAction {
     GLOBAL_DEBUG,
     GLOBAL_EXIT,
+    GLOBAL_MAP_MENU,
+    GLOBAL_MAP_TMP,
     GLOBAL_END
 } GlobalAction;
 
 typedef enum _EditorAction {
     EDITOR_PLAYING,
-    EDITOR_EDITOR,
     EDITOR_SAVE,
+    EDITOR_OPTIONS,
     EDITOR_END
 } EditorAction;
 
@@ -25,13 +25,15 @@ typedef enum _GameAction {
     GAME_MOVE_RIGHT,
     GAME_JUMP,
     GAME_RESET,
+    GAME_OPTIONS,
+    GAME_EDITOR,
     GAME_END
 } GameAction;
 
-KeyboardKey global[GLOBAL_END] = {KEY_F3, KEY_Q};
-KeyboardKey editor[EDITOR_END] = {KEY_G, KEY_E, KEY_S};
+KeyboardKey global[GLOBAL_END] = {KEY_F3, KEY_Q, KEY_ONE, KEY_TWO};
+KeyboardKey editor[EDITOR_END] = {KEY_G, KEY_S, KEY_ESCAPE};
 // KeyboardKey game[GAME_END] = {KEY_LEFT, KEY_RIGHT, KEY_UP, KEY_R};
-KeyboardKey game[GAME_END] = {KEY_A, KEY_D, KEY_W, KEY_R};
+KeyboardKey game[GAME_END] = {KEY_A, KEY_D, KEY_W, KEY_R, KEY_ESCAPE, KEY_E};
 
 void keybindUpdate(ActionSet set) {
     switch (set) {
@@ -48,10 +50,17 @@ void keybindUpdate(ActionSet set) {
             case GLOBAL_EXIT:
                 if (!IsKeyDown(KEY_LEFT_CONTROL))
                     break;
-                levelsUnload();
-                resourcesUnload();
-                CloseWindow();
-                exit(0);
+                gstateExit();
+                break;
+
+                // DEBUG; to be deleted
+            case GLOBAL_MAP_MENU:
+                active_level = LEVEL_MENU;
+                editorSetTilemap(levelsGet(active_level));
+                break;
+            case GLOBAL_MAP_TMP:
+                active_level = LEVEL_TMP;
+                editorSetTilemap(levelsGet(active_level));
                 break;
             }
         }
@@ -67,12 +76,15 @@ void keybindUpdate(ActionSet set) {
                 gstateSet(GSTATE_PLAYING);
                 break;
 
-            case EDITOR_EDITOR:
-                gstateSet(GSTATE_EDITOR);
+            case EDITOR_SAVE:
+                if (!IsKeyDown(KEY_LEFT_CONTROL))
+                    break;
+
+                editorSave();
                 break;
 
-            case EDITOR_SAVE:
-                editorSave();
+            case EDITOR_OPTIONS:
+                gstateSet(GSTATE_MENU);
                 break;
             }
         }
@@ -83,12 +95,28 @@ void keybindUpdate(ActionSet set) {
         hamsterMove(-IsKeyDown(game[GAME_MOVE_LEFT]) +
                     IsKeyDown(game[GAME_MOVE_RIGHT]));
 
-        if (IsKeyPressed(game[GAME_JUMP]) ||
-            IsGamepadButtonPressed(0, GAMEPAD_BUTTON_RIGHT_FACE_DOWN))
-            hamsterJump();
+        for (int i = 2; i < GAME_END; i++) {
+            if (!IsKeyPressed(game[i]))
+                continue;
 
-        if (IsKeyPressed(game[GAME_RESET])) {
-            hamsterReset();
+            switch (i) {
+            case GAME_JUMP:
+                hamsterJump();
+                break;
+
+            case GAME_RESET:
+                hamsterReset();
+                break;
+
+            case GAME_OPTIONS:
+                gstateSet(GSTATE_MENU);
+                break;
+
+            case GAME_EDITOR:
+                gstateSet(GSTATE_EDITOR);
+                break;
+
+            }
         }
     }
 }

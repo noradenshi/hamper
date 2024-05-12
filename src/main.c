@@ -16,9 +16,13 @@ int main() {
     InitWindow(1200, 800, "hamper");
     SetExitKey(KEY_NULL);
 
+    InitAudioDevice();
+
     resourcesInit(); // initializes animations as well
     hamsterInit();
     levelsLoad();
+
+    // const Texture background = LoadTexture("resources/background.png");
 
     SetTargetFPS(60);
     gstateSet(GSTATE_MENU);
@@ -35,14 +39,13 @@ int main() {
 
         switch (gstateGet()) {
         case GSTATE_MENU:
-            // TODO;
+            menuUpdate();
             break;
         case GSTATE_PLAYING:
-            keybindUpdate(ACTIONS_EDITOR);
             keybindUpdate(ACTIONS_GAME);
             hamsterUpdate();
             hamsterHandleCollisions(
-                tilemapGetCollisions(levelsGet(), hamsterGetRect()));
+                tilemapGetCollisions(levelsGet(active_level), hamsterGetRect()));
 
             // if (GetMouseDelta().x != .0f || GetMouseDelta().y != .0f)
             alleySetTarget(
@@ -61,11 +64,13 @@ int main() {
 
         switch (gstateGet()) {
         case GSTATE_MENU:
-            menuDraw();
+            BeginMode2D(*menuGetCamera());
+            tilemapDraw(levelsGet(active_level));
+            menuDrawEnd2D();
             break;
         case GSTATE_PLAYING:
             BeginMode2D(*hamsterGetCamera());
-            tilemapDraw(levelsGet());
+            tilemapDraw(levelsGet(active_level));
             hamsterDraw();
             alleyDraw();
             EndMode2D();
@@ -73,7 +78,7 @@ int main() {
 
         case GSTATE_EDITOR:
             BeginMode2D(*editorGetCamera());
-            tilemapDraw(levelsGet());
+            tilemapDraw(levelsGet(active_level));
             hamsterDraw();
             alleyDraw();
             editorDrawEnd2D();

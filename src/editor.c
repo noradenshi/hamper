@@ -1,4 +1,6 @@
 #include "editor.h"
+#include "gamestate.h"
+#include "levels.h"
 #include "resources.h"
 #include "tilemap.h"
 #include <raylib.h>
@@ -26,8 +28,9 @@ Tilemap *active_tilemap;
 
 Camera2D *editorGetCamera() { return &editor_camera; }
 
-void editorSave(){
-    tilemapSave(active_tilemap, "resources/test_tmp");
+void editorSave() {
+    tilemapSave(active_tilemap, levelsFilename(active_level));
+    TraceLog(LOG_INFO, "Saved!");
 }
 
 void editorSetTilemap(Tilemap *tilemap) { active_tilemap = tilemap; }
@@ -98,11 +101,6 @@ void editorUpdate() {
                                    selection.mouse_tile.y, TILE_SIZE,
                                    TILE_SIZE},
                        -1);
-    }
-
-    if (IsKeyDown(KEY_LEFT_CONTROL) && IsKeyPressed(KEY_S)) {
-        tilemapSave(active_tilemap, "resources/test_tmp");
-        TraceLog(LOG_INFO, "Saved!");
     }
 }
 

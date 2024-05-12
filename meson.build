@@ -21,6 +21,7 @@ sources = [
   'src/alley.c',
   'src/levels.c',
   'src/menu.c',
+  'src/button.c',
 ]
 
 executable('exe', sources,

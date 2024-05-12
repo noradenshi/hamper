@@ -1,11 +1,22 @@
 #include "levels.h"
 
-Tilemap *tilemaps[1];
+Tilemap *tilemaps[LEVEL_SIZE];
 
-void levelsLoad() { tilemaps[0] = tilemapLoad("resources/test_tmp"); }
+const char *tilemap_filenames[2] = {"resources/levels/test_menu",
+                                    "resources/levels/test_tmp"};
 
-Tilemap *levelsGet(){
-    return tilemaps[0];
+void levelsLoad() {
+    for (int i = 0; i < LEVEL_SIZE; i++) {
+        tilemaps[i] = tilemapLoad(tilemap_filenames[i]);
+    }
 }
 
-void levelsUnload() { tilemapUnload(tilemaps[0]); }
+Tilemap *levelsGet(Level level) { return tilemaps[level]; }
+
+const char *levelsFilename(Level level) { return tilemap_filenames[level]; }
+
+void levelsUnload() {
+    for (int i = 0; i < LEVEL_SIZE; i++) {
+        tilemapUnload(tilemaps[i]);
+    }
+}

@@ -3,10 +3,14 @@
 #include "editor.h"
 #include "hamster.h"
 #include "levels.h"
+#include "menu.h"
+#include "resources.h"
 #include <raylib.h>
+#include <stdlib.h>
 
 GameState gameState;
 bool IS_DEBUG = true;
+Level active_level = LEVEL_MENU;
 
 GameState gstateGet() { return gameState; }
 
@@ -14,6 +18,7 @@ void gstateSet(GameState state) {
     gameState = state;
     switch (gameState) {
     case GSTATE_MENU:
+        menuInit();
         ShowCursor();
         break;
     case GSTATE_PLAYING:
@@ -23,7 +28,7 @@ void gstateSet(GameState state) {
         break;
     case GSTATE_EDITOR:
         ShowCursor();
-        editorSetTilemap(levelsGet());
+        editorSetTilemap(levelsGet(active_level));
         break;
     }
 }
@@ -39,4 +44,11 @@ void gstateDebug(float x, float y, int fontsize) {
     default:
         break;
     }
+}
+
+void gstateExit() {
+    levelsUnload();
+    resourcesUnload();
+    CloseWindow();
+    exit(0);
 }
