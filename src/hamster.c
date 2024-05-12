@@ -120,6 +120,7 @@ void hamsterJump() {
         hamster_is_grounded = false;
         hamster_velocity.y = -hamster_jump_force;
         hamster_ground_buffer_timer = 0.f;
+        PlaySound(sounds.jump);
         return;
     }
 

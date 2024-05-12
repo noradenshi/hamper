@@ -9,7 +9,7 @@
 #include <stdlib.h>
 
 GameState gameState;
-bool IS_DEBUG = true;
+bool IS_DEBUG = false;
 Level active_level = LEVEL_MENU;
 
 GameState gstateGet() { return gameState; }

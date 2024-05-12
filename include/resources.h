@@ -22,8 +22,8 @@ extern struct _Recs {
 
 extern struct _Sounds {
     Sound walk_grass;
-    Sound draw1;
-    Sound draw2;
+    Sound draw;
+    Sound jump;
 } sounds;
 
 void resourcesInit();

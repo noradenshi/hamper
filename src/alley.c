@@ -46,10 +46,7 @@ void alleyUpdate() {
 
     if (IsMouseButtonPressed(0)) {
         points[0] = alley_target_pos;
-        if (!IsSoundPlaying(sounds.draw1))
-            PlaySound(sounds.draw1);
-        else
-            PlaySound(sounds.draw2);
+        PlaySound(sounds.draw);
     }
     if (IsMouseButtonDown(0)) {
         points[1] = alley_target_pos;

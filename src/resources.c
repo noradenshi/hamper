@@ -32,8 +32,9 @@ void resourcesInit() {
     textures.cursor = LoadTexture("resources/textures/cursor.png");
     
     sounds.walk_grass = LoadSound("resources/sounds/walk.wav");
-    sounds.draw1 = LoadSound("resources/sounds/draw1.wav");
-    sounds.draw2 = LoadSound("resources/sounds/draw2.wav");
+    sounds.draw = LoadSound("resources/sounds/draw.wav");
+    sounds.jump = LoadSound("resources/sounds/jump.wav");
+
     SetSoundPitch(sounds.walk_grass, 1.2f);
 }
 
