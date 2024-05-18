@@ -17,6 +17,7 @@ Vector2 alley_target_origin = {0};
 
 Vector2 points[2] = {0};
 Vector2 alley_line_normal = {0};
+bool alley_is_drawing = false;
 
 Rectangle alley_target_rec =
     (Rectangle){0, 0, ALLEY_CURSOR_SIZE, ALLEY_CURSOR_SIZE};
@@ -47,8 +48,9 @@ void alleyUpdate() {
     if (IsMouseButtonPressed(0)) {
         points[0] = alley_target_pos;
         PlaySound(sounds.draw);
+        alley_is_drawing = true;
     }
-    if (IsMouseButtonDown(0)) {
+    if (alley_is_drawing && IsMouseButtonDown(0)) {
         points[1] = alley_target_pos;
 
         if (Vector2Distance(points[0], points[1]) > LINE_MAX_LENGTH) {
@@ -61,6 +63,8 @@ void alleyUpdate() {
             points[1].y =
                 mouse_distance * (points[1].x - points[0].x) + points[0].y;
         }
+    } else {
+        alley_is_drawing = false;
     }
 }
 

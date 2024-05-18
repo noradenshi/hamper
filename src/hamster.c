@@ -30,7 +30,7 @@ bool hamster_is_flipped = false;
 bool hamster_is_grounded = false;
 
 // TEMP
-float air_friction = 1.1f;
+float air_friction = 1.15f;
 float grass_friction = 1.2f;
 
 Animation *hamster_anim;

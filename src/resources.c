@@ -30,7 +30,7 @@ void resourcesInit() {
     textures.background = LoadTexture("resources/textures/background.png");
     textures.players = LoadTexture("resources/textures/hamster.png");
     textures.cursor = LoadTexture("resources/textures/cursor.png");
-    
+
     sounds.walk_grass = LoadSound("resources/sounds/walk.wav");
     sounds.draw = LoadSound("resources/sounds/draw.wav");
     sounds.jump = LoadSound("resources/sounds/jump.wav");

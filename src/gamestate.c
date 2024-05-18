@@ -22,6 +22,7 @@ void gstateSet(GameState state) {
         ShowCursor();
         break;
     case GSTATE_PLAYING:
+        active_level = LEVEL_TMP;
         HideCursor();
         alleySetTarget(
             GetScreenToWorld2D(GetMousePosition(), *hamsterGetCamera()));

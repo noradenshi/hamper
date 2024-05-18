@@ -12,9 +12,10 @@
 #include <rlgl.h>
 
 int main() {
-    SetConfigFlags(FLAG_WINDOW_RESIZABLE);
+    SetConfigFlags(FLAG_WINDOW_RESIZABLE | FLAG_VSYNC_HINT);
     InitWindow(1200, 800, "hamper");
     SetExitKey(KEY_NULL);
+    
 
     InitAudioDevice();
 
@@ -22,9 +23,6 @@ int main() {
     hamsterInit();
     levelsLoad();
 
-    // const Texture background = LoadTexture("resources/background.png");
-
-    SetTargetFPS(60);
     gstateSet(GSTATE_MENU);
 
     while (!WindowShouldClose()) {
@@ -64,9 +62,7 @@ int main() {
 
         switch (gstateGet()) {
         case GSTATE_MENU:
-            BeginMode2D(*menuGetCamera());
-            tilemapDraw(levelsGet(active_level));
-            menuDrawEnd2D();
+            menuDraw();
             break;
         case GSTATE_PLAYING:
             BeginMode2D(*hamsterGetCamera());

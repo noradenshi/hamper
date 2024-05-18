@@ -75,7 +75,6 @@ void editorUpdate() {
 
     if (GetMouseWheelMove() != 0) {
         editor_camera.zoom *= (GetMouseWheelMove() > 0.f) ? 1.25f : 0.8f;
-        // TraceLog(LOG_INFO, "zoom: %f", editor_camera.zoom);
     }
 
     selection.mouse_tile =
