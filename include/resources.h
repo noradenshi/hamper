@@ -12,6 +12,7 @@ extern struct _WindowData {
 extern struct _Textures {
     Texture tileset;
     Texture players;
+    Texture items;
     Texture cursor;
     Texture background;
 } textures;

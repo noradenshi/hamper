@@ -18,9 +18,14 @@ Vector2 alley_target_origin = {0};
 Vector2 points[2] = {0};
 Vector2 alley_line_normal = {0};
 bool alley_is_drawing = false;
+int alley_available_lines = 1;
 
 Rectangle alley_target_rec =
     (Rectangle){0, 0, ALLEY_CURSOR_SIZE, ALLEY_CURSOR_SIZE};
+
+void alleyAddLines(int amount) {
+    alley_available_lines += amount;
+}
 
 void alleySetTarget(Vector2 mouse_pos) {
     if (alley_pos.x > mouse_pos.x) {
@@ -45,7 +50,8 @@ void alleyUpdate() {
     alley_pos = Vector2Lerp(alley_pos, alley_target_pos, 0.1f);
     animationUpdate(animations.alley_idle);
 
-    if (IsMouseButtonPressed(0)) {
+    if (alley_available_lines > 0 && IsMouseButtonPressed(0)) {
+        alley_available_lines--;
         points[0] = alley_target_pos;
         PlaySound(sounds.draw);
         alley_is_drawing = true;
@@ -83,6 +89,12 @@ void alleyDraw() {
                    (Rectangle){alley_target_pos.x, alley_target_pos.y,
                                ALLEY_CURSOR_SIZE, ALLEY_CURSOR_SIZE},
                    alley_target_offset, 0.f, WHITE);
+}
+
+void alleyHUDDraw() {
+    const char *lines_text = TextFormat("lines: %d", alley_available_lines);
+    DrawText(lines_text, window_data.WIDTH - MeasureText(lines_text, 36) - 10,
+             10, 36, WHITE);
 }
 
 Vector2 alleyLineGetNormal() {

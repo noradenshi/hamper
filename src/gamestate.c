@@ -29,7 +29,7 @@ void gstateSet(GameState state) {
         break;
     case GSTATE_EDITOR:
         ShowCursor();
-        editorSetTilemap(levelsGet(active_level));
+        editorSetTilemap(levelGetTilemap(active_level));
         break;
     }
 }

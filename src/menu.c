@@ -73,7 +73,7 @@ void menuUpdate() {
 
 void menuDraw() {
     BeginMode2D(menu_camera);
-    tilemapDraw(levelsGet(LEVEL_MENU));
+    tilemapDraw(levelGetTilemap(LEVEL_MENU));
     DrawTexturePro(textures.players,
                    *animationGetFrame(animations.hamster_idle),
                    (Rectangle){40, -16, 16, 16}, (Vector2){0}, 0.f, WHITE);

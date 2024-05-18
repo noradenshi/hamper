@@ -2,6 +2,7 @@
 #include "editor.h"
 #include "gamestate.h"
 #include "hamster.h"
+#include "item.h"
 #include "keybinds.h"
 #include "levels.h"
 #include "menu.h"
@@ -15,7 +16,6 @@ int main() {
     SetConfigFlags(FLAG_WINDOW_RESIZABLE | FLAG_VSYNC_HINT);
     InitWindow(1200, 800, "hamper");
     SetExitKey(KEY_NULL);
-    
 
     InitAudioDevice();
 
@@ -42,8 +42,9 @@ int main() {
         case GSTATE_PLAYING:
             keybindUpdate(ACTIONS_GAME);
             hamsterUpdate();
-            hamsterHandleCollisions(
-                tilemapGetCollisions(levelsGet(active_level), hamsterGetRect()));
+            hamsterHandleCollisions(tilemapGetCollisions(
+                levelGetTilemap(active_level), hamsterGetRect()));
+            levelUpdateItems(active_level);
 
             // if (GetMouseDelta().x != .0f || GetMouseDelta().y != .0f)
             alleySetTarget(
@@ -66,15 +67,16 @@ int main() {
             break;
         case GSTATE_PLAYING:
             BeginMode2D(*hamsterGetCamera());
-            tilemapDraw(levelsGet(active_level));
+            levelDraw(active_level);
             hamsterDraw();
             alleyDraw();
             EndMode2D();
+            alleyHUDDraw();
             break;
 
         case GSTATE_EDITOR:
             BeginMode2D(*editorGetCamera());
-            tilemapDraw(levelsGet(active_level));
+            levelDraw(active_level);
             hamsterDraw();
             alleyDraw();
             editorDrawEnd2D();

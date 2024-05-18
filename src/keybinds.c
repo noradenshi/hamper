@@ -56,11 +56,11 @@ void keybindUpdate(ActionSet set) {
                 // DEBUG; to be deleted
             case GLOBAL_MAP_MENU:
                 active_level = LEVEL_MENU;
-                editorSetTilemap(levelsGet(active_level));
+                editorSetTilemap(levelGetTilemap(active_level));
                 break;
             case GLOBAL_MAP_TMP:
                 active_level = LEVEL_TMP;
-                editorSetTilemap(levelsGet(active_level));
+                editorSetTilemap(levelGetTilemap(active_level));
                 break;
             }
         }
