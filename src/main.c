@@ -2,7 +2,6 @@
 #include "editor.h"
 #include "gamestate.h"
 #include "hamster.h"
-#include "item.h"
 #include "keybinds.h"
 #include "levels.h"
 #include "menu.h"
@@ -44,7 +43,7 @@ int main() {
             hamsterUpdate();
             hamsterHandleCollisions(tilemapGetCollisions(
                 levelGetTilemap(active_level), hamsterGetRect()));
-            levelUpdateItems(active_level);
+            levelUpdateEntitys(active_level);
 
             // if (GetMouseDelta().x != .0f || GetMouseDelta().y != .0f)
             alleySetTarget(

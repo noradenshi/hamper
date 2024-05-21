@@ -22,7 +22,7 @@ sources = [
   'src/levels.c',
   'src/menu.c',
   'src/button.c',
-  'src/item.c',
+  'src/entity.c',
 ]
 
 executable('exe', sources,

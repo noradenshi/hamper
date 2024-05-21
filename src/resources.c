@@ -29,7 +29,7 @@ void resourcesInit() {
 
     textures.background = LoadTexture("resources/textures/background.png");
     textures.players = LoadTexture("resources/textures/players.png");
-    textures.items = LoadTexture("resources/textures/items.png");
+    textures.entities = LoadTexture("resources/textures/entities.png");
     textures.cursor = LoadTexture("resources/textures/cursor.png");
 
     sounds.walk_grass = LoadSound("resources/sounds/walk.wav");
