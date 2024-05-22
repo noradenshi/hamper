@@ -19,10 +19,8 @@ struct _Tilemap {
     Tile *tiles;
 };
 
-Collisions collision_list;
+Collisions collisions;
 const Vector2 tile_origin = {0};
-
-int tilemapGetCollisionsSize() { return collision_list.size; }
 
 // private
 int tilemapGetTileIdAt(Tilemap *tilemap, Vector2 point) {
@@ -118,42 +116,40 @@ Tilemap *tilemapLoad(const char *filename) {
     return tilemap;
 }
 
-// TODO: merge by longer sides, not position
 Collisions *tilemapGetCollisions(Tilemap *tilemap, Rectangle rectangle) {
-    collision_list.size = 0;
+    collisions = (Collisions){0};
     for (int i = 0; i < tilemap->size; i++) {
         if (tilemap->tiles[i].src_id == -1)
             continue;
 
         Rectangle rect = GetCollisionRec(rectangle, tilemap->tiles[i].pos);
-        if (rect.width > 3.f || rect.height > 3.f) {
-            if (collision_list.size > 0) {
-                if (rect.x == collision_list.rec[collision_list.size - 1].x) {
-                    collision_list.rec[collision_list.size - 1].height +=
-                        rect.height;
-                    if (rect.y < collision_list.rec[collision_list.size - 1].y)
-                        collision_list.rec[collision_list.size - 1].y = rect.y;
+        if (rect.width > 3.f && rect.width > rect.height) { // y axis
+            if (collisions.rec_y.width == 0.f) {
+                collisions.rec_y = rect;
+            } else {
+                collisions.rec_y.height += rect.height;
 
-                    continue;
-                }
-                if (rect.y == collision_list.rec[collision_list.size - 1].y) {
-                    collision_list.rec[collision_list.size - 1].width +=
-                        rect.width;
-                    if (rect.x < collision_list.rec[collision_list.size - 1].x)
-                        collision_list.rec[collision_list.size - 1].x = rect.x;
+                if (rect.y < collisions.rec_y.y)
+                    collisions.rec_y.y = rect.y;
 
-                    continue;
-                }
+                continue;
             }
+        } else if (rect.height > 3.f && rect.height > rect.width) {
+            if (collisions.rec_x.width == 0.f) {
+                collisions.rec_x = rect;
+            } else {
+                collisions.rec_x.width += rect.width;
 
-            if (collision_list.size == 2)
-                break;
+                if (rect.x < collisions.rec_x.x)
+                    collisions.rec_x.x = rect.x;
 
-            collision_list.rec[collision_list.size] = rect;
-            collision_list.size++;
+                continue;
+            }
         }
+
+        // maybe return early if both axis are exhausted
     }
-    return &collision_list;
+    return &collisions;
 }
 
 void tilemapSetTile(Tilemap *tilemap, Rectangle pos, int src_id) {
@@ -208,12 +204,6 @@ void tilemapDraw(Tilemap *tilemap) {
 
         DrawTexturePro(textures.tileset, recs.tileset[tilemap->tiles[i].src_id],
                        tilemap->tiles[i].pos, tile_origin, 0.f, WHITE);
-    }
-
-    if (IS_DEBUG) {
-        for (int i = 0; i < collision_list.size; i++) {
-            DrawRectangleLinesEx(collision_list.rec[i], 1.f, RED);
-        }
     }
 }
 

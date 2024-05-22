@@ -11,9 +11,10 @@ void hamsterJump();
 float hamsterGetJumpBufferTime();
 float hamsterGetGroundBufferTime();
 
-Rectangle hamsterGetRect();
+Rectangle *hamsterGetRect();
 void hamsterHandleCollisions(Collisions *collisions);
 void hamsterUpdate();
 void hamsterCameraUpdate();
 Camera2D *hamsterGetCamera();
 void hamsterDraw();
+void hamsterDrawHUD();

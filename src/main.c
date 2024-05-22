@@ -6,7 +6,6 @@
 #include "levels.h"
 #include "menu.h"
 #include "resources.h"
-#include "tilemap.h"
 #include <raylib.h>
 #include <raymath.h>
 #include <rlgl.h>
@@ -41,8 +40,9 @@ int main() {
         case GSTATE_PLAYING:
             keybindUpdate(ACTIONS_GAME);
             hamsterUpdate();
-            hamsterHandleCollisions(tilemapGetCollisions(
-                levelGetTilemap(active_level), hamsterGetRect()));
+            //            hamsterHandleCollisions(tilemapGetCollisions(
+            //                levelGetTilemap(active_level), hamsterGetRect()));
+            levelHandleCollision(active_level, hamsterGetRect());
             levelUpdateEntities(active_level);
 
             // if (GetMouseDelta().x != .0f || GetMouseDelta().y != .0f)
@@ -70,6 +70,7 @@ int main() {
             hamsterDraw();
             alleyDraw();
             EndMode2D();
+            hamsterDrawHUD();
             alleyHUDDraw();
             break;
 
@@ -83,8 +84,6 @@ int main() {
         }
 
         if (IS_DEBUG && gstateGet() != GSTATE_MENU) {
-            DrawText(TextFormat("collisions: %d", tilemapGetCollisionsSize()),
-                     5, 24, 24, WHITE);
             DrawText(
                 TextFormat("jump buffer: %.4f", hamsterGetJumpBufferTime()), 5,
                 24 * 2, 24, WHITE);

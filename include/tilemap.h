@@ -4,14 +4,10 @@
 typedef struct _Tile Tile;
 typedef struct _Tilemap Tilemap;
 
-#define MAX_COLLISIONS 2
 typedef struct _Collisions {
-    Rectangle rec[MAX_COLLISIONS];
-    int size;
+    Rectangle rec_x;
+    Rectangle rec_y;
 } Collisions;
-
-// DEBUG
-int tilemapGetCollisionsSize();
 
 Tilemap *tilemapEmpty();
 Tilemap *tilemapLoad(const char *filename);
