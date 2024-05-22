@@ -1,8 +1,9 @@
 #include "levels.h"
-#include "hamster.h"
 #include "entity.h"
+#include "hamster.h"
 #include "tilemap.h"
 #include <raylib.h>
+#include <raymath.h>
 #include <stdlib.h>
 #include <time.h>
 
@@ -11,6 +12,7 @@ struct LevelInfo {
     Entity *entities;
     int entity_count;
     int entity_capacity;
+    float gravity;
 } levels[LEVEL_SIZE];
 
 const char *tilemap_filenames[LEVEL_SIZE] = {"resources/levels/test_menu",
@@ -21,10 +23,11 @@ void levelSpawnEntity(Level level, EntityType type, Vector2 position) {
         levels[level].entity_capacity += 1;
         levels[level].entities =
             realloc(levels[level].entities, sizeof(levels[level].entities[0]) *
-                                             levels[level].entity_capacity);
+                                                levels[level].entity_capacity);
     }
 
-    entitySpawn(&levels[level].entities[levels[level].entity_count], type, position);
+    entitySpawn(&levels[level].entities[levels[level].entity_count], type,
+                position);
     levels[level].entity_count++;
 }
 
@@ -36,19 +39,27 @@ void levelsLoad() {
         levels[i].entities = NULL;
     }
 
+    levels[LEVEL_TMP].gravity = 8.f;
+
     levelSpawnEntity(LEVEL_TMP, ENTITY_BOX, (Vector2){20, 130});
 }
+
+float levelGetGravity(Level level) { return levels[level].gravity; }
 
 Tilemap *levelGetTilemap(Level level) { return levels[level].tilemap; }
 
 const char *levelsFilename(Level level) { return tilemap_filenames[level]; }
 
-void levelUpdateEntitys(Level level) {
+void levelUpdateEntities(Level level) {
     for (int i = 0; i < levels[level].entity_count; i++) {
-        if (levels[level].entities[i].type != ENTITY_NONE) {
-            if (CheckCollisionRecs(levels[level].entities[i].position_rec, hamsterGetRect())) {
-                levels[level].entities[i].on_pickup();
-                levels[level].entities[i].type = ENTITY_NONE;
+        if (levels[level].entities[i].type != ENTITY_NONE &&
+            !levels[level].entities[i].is_stationary) {
+            if (CheckCollisionRecs(levels[level].entities[i].position_rec,
+                                   hamsterGetRect())) {
+                // levels[level].entities[i].on_pickup();
+                // levels[level].entities[i].type = ENTITY_NONE;
+                levels[level].entities[i].position_rec.x +=
+                    levels[level].entities[i].position_rec.x - hamsterGetRect().x;
             }
         }
     }

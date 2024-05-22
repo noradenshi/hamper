@@ -43,7 +43,7 @@ int main() {
             hamsterUpdate();
             hamsterHandleCollisions(tilemapGetCollisions(
                 levelGetTilemap(active_level), hamsterGetRect()));
-            levelUpdateEntitys(active_level);
+            levelUpdateEntities(active_level);
 
             // if (GetMouseDelta().x != .0f || GetMouseDelta().y != .0f)
             alleySetTarget(

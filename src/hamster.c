@@ -19,7 +19,6 @@ Vector2 hamster_ground_check;
 short hamster_horizontal = 0;
 float hamster_speed = 25.f;
 float hamster_jump_force = 4.f;
-float hamster_gravity = 8.f;
 
 const float hamster_max_speed = 100.f;
 const float hamster_buffer_amount = .25f;
@@ -152,7 +151,7 @@ void hamsterUpdate() {
         hamster_velocity.x = hamster_velocity.x / grass_friction;
         hamster_ground_buffer_timer = hamster_buffer_amount;
     } else {
-        hamster_velocity.y += hamster_gravity * GetFrameTime();
+        hamster_velocity.y += levelGetGravity(active_level) * GetFrameTime();
         hamster_velocity.x = hamster_velocity.x / air_friction;
         hamster_ground_buffer_timer -= GetFrameTime();
     }

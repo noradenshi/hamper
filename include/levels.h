@@ -8,6 +8,7 @@ void levelsLoad();
 const char *levelsFilename(Level level);
 void levelsUnload();
 
-void levelUpdateEntitys(Level level);
+float levelGetGravity(Level level);
+void levelUpdateEntities(Level level);
 void levelDraw(Level level);
 Tilemap *levelGetTilemap(Level level);

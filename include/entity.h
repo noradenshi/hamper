@@ -7,7 +7,9 @@ struct _Entity {
     EntityType type;
     Rectangle position_rec;
     Rectangle const *texture_rec;
-    void (*on_pickup)(void);
+    bool is_stationary;
+    Vector2 velocity;
+    //void (*on_pickup)(void);
 };
 typedef struct _Entity Entity;
 
