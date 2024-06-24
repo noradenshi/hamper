@@ -1,12 +1,11 @@
 project('hamper', 'c',
   default_options: [
-    'prefix=/home/noradenshi/Projects/hamper',
     'c_std=c2x'
   ]
 )
 
+dir = meson.current_source_dir()
 cc = meson.get_compiler('c')
-
 deps = [ cc.find_library('raylib'), cc.find_library('m') ]
 
 sources = [
@@ -28,4 +27,5 @@ sources = [
 executable('exe', sources,
   include_directories: ['include'],
   dependencies: deps,
+  install_dir: dir + '/bin',
   install: true)

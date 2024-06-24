@@ -40,8 +40,6 @@ int main() {
         case GSTATE_PLAYING:
             keybindUpdate(ACTIONS_GAME);
             hamsterUpdate();
-            //            hamsterHandleCollisions(tilemapGetCollisions(
-            //                levelGetTilemap(active_level), hamsterGetRect()));
             levelHandleCollision(active_level, hamsterGetRect());
             levelUpdateEntities(active_level);
 

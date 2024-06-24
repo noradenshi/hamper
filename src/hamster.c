@@ -18,10 +18,10 @@ Vector2 hamster_direction = {0};
 Vector2 hamster_ground_check;
 
 short hamster_horizontal = 0;
-float hamster_speed = 25.f;
-float hamster_jump_force = 4.f;
+const float hamster_speed = 25.f;
+const float hamster_jump_force = 4.f;
 
-const float hamster_max_speed = 100.f;
+const float hamster_max_speed = 10.f;
 const float hamster_buffer_amount = .25f;
 float hamster_jump_buffer_timer = 0.f;
 float hamster_ground_buffer_timer = 0.f;
@@ -29,12 +29,15 @@ float hamster_ground_buffer_timer = 0.f;
 bool hamster_is_flipped = false;
 bool hamster_is_grounded = false;
 
-// TEMP
-float air_friction = 1.15f;
-float grass_friction = 1.2f;
-
 Animation *hamster_anim;
 Camera2D hamster_camera;
+
+// DEBUG
+Collisions *colls;
+
+// TEMP
+const float air_friction = 5.f;
+const float grass_friction = 15.f;
 
 void hamsterInit() {
     hamster_anim = animations.hamster_idle;
@@ -62,31 +65,27 @@ float hamsterGetGroundBufferTime() { return hamster_ground_buffer_timer; }
 
 Rectangle *hamsterGetRect() { return &hamster_rec; }
 
-Collisions *colls;
-
 void hamsterHandleCollisions(Collisions *collisions) {
     colls = collisions;
     hamster_is_grounded = false;
 
-    if (collisions->rec_y.width > 0.f) {
+    if (collisions->rec_y.height > .0f) {
         if (collisions->rec_y.y == hamster_rec.y) {
-            hamster_velocity.y = .0f;
             hamster_rec.y += collisions->rec_y.height;
         } else {
             hamster_is_grounded = true;
-            hamster_velocity.y = .0f;
             hamster_rec.y = collisions->rec_y.y - HAMSTER_SIZE;
         }
+        hamster_velocity.y = .0f;
     }
 
-    if (collisions->rec_x.width > 0.f) {
+    if (collisions->rec_x.width > .0f) {
         if (collisions->rec_x.x == hamster_rec.x) {
-            hamster_velocity.x = .0f;
             hamster_rec.x += collisions->rec_x.width;
         } else {
-            hamster_velocity.x = .0f;
             hamster_rec.x = collisions->rec_x.x - HAMSTER_SIZE;
         }
+        hamster_velocity.x = .0f;
     }
 
     hamster_ground_check = (Vector2){hamster_rec.x + HAMSTER_SIZE / 2.f,
@@ -104,8 +103,6 @@ void hamsterHandleCollisions(Collisions *collisions) {
         if (hamster_velocity.y > 0.f)
             hamster_velocity.y = -.1f;
     }
-
-    hamsterCameraUpdate();
 }
 
 void hamsterMove(short direction) {
@@ -141,7 +138,7 @@ void hamsterUpdate() {
     animationUpdate(hamster_anim);
 
     if (hamster_jump_buffer_timer > 0.f) {
-        hamster_jump_buffer_timer -= GetFrameTime() * 1.f;
+        hamster_jump_buffer_timer -= GetFrameTime();
     }
 
     if (hamster_is_grounded) {
@@ -152,23 +149,31 @@ void hamsterUpdate() {
             hamsterJump();
 
         hamster_jump_buffer_timer = 0.f;
-        hamster_velocity.x = hamster_velocity.x / grass_friction;
+        hamster_velocity.x += ((hamster_velocity.x > 0) ? -1 : 1) *
+                              grass_friction * GetFrameTime();
         hamster_ground_buffer_timer = hamster_buffer_amount;
     } else {
         hamster_velocity.y += levelGetGravity(active_level) * GetFrameTime();
-        hamster_velocity.x = hamster_velocity.x / air_friction;
+        hamster_velocity.x -=
+            ((hamster_velocity.x > 0) ? -1 : 1) * air_friction * GetFrameTime();
         hamster_ground_buffer_timer -= GetFrameTime();
     }
 
-    hamster_velocity = Vector2ClampValue(hamster_velocity, -hamster_max_speed,
-                                         hamster_max_speed);
+    // hamster_velocity = Vector2ClampValue(hamster_velocity,
+    // -hamster_max_speed,
+    //                                      hamster_max_speed);
+
+    hamster_velocity.x = (hamster_velocity.x < hamster_max_speed)
+                             ? hamster_velocity.x
+                             : hamster_max_speed;
 
     hamster_rec.x += hamster_velocity.x;
     hamster_rec.y += hamster_velocity.y;
+
     hamster_camera.target = Vector2Lerp(
         hamster_camera.target, (Vector2){hamster_rec.x, hamster_rec.y}, .35f);
 
-    // hamsterCameraUpdate();
+    hamsterCameraUpdate();
 }
 
 void hamsterCameraUpdate() {
