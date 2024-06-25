@@ -4,6 +4,7 @@
 #include "gamestate.h"
 #include "resources.h"
 #include "tilemap.h"
+#include <math.h>
 #include <raylib.h>
 #include <raymath.h>
 
@@ -18,10 +19,10 @@ Vector2 hamster_direction = {0};
 Vector2 hamster_ground_check;
 
 short hamster_horizontal = 0;
-const float hamster_speed = 25.f;
+const float hamster_accel = 20.f;
 const float hamster_jump_force = 4.f;
 
-const float hamster_max_speed = 10.f;
+const float hamster_max_speed = 250.f;
 const float hamster_buffer_amount = .25f;
 float hamster_jump_buffer_timer = 0.f;
 float hamster_ground_buffer_timer = 0.f;
@@ -36,7 +37,7 @@ Camera2D hamster_camera;
 Collisions *colls;
 
 // TEMP
-const float air_friction = 5.f;
+const float air_friction = 10.f;
 const float grass_friction = 15.f;
 
 void hamsterInit() {
@@ -112,7 +113,7 @@ void hamsterMove(short direction) {
         animationSetFlipped(hamster_anim, hamster_is_flipped);
     }
 
-    hamster_velocity.x += hamster_horizontal * hamster_speed * GetFrameTime();
+    hamster_velocity.x += hamster_horizontal * hamster_accel * GetFrameTime();
 }
 
 void hamsterJump() {
@@ -125,6 +126,20 @@ void hamsterJump() {
     }
 
     hamster_jump_buffer_timer = hamster_buffer_amount;
+}
+
+void hamsterApplyFriction(float friction) {
+    if (fabsf(hamster_velocity.x) < .01f) {
+        hamster_velocity.x = 0.f;
+        return;
+    }
+
+    if (hamster_velocity.x >= 0.f) {
+        hamster_velocity.x -= friction * GetFrameTime();
+        return;
+    }
+
+    hamster_velocity.x += friction * GetFrameTime();
 }
 
 void hamsterUpdate() {
@@ -149,23 +164,21 @@ void hamsterUpdate() {
             hamsterJump();
 
         hamster_jump_buffer_timer = 0.f;
-        hamster_velocity.x += ((hamster_velocity.x > 0) ? -1 : 1) *
-                              grass_friction * GetFrameTime();
+        hamsterApplyFriction(grass_friction);
         hamster_ground_buffer_timer = hamster_buffer_amount;
     } else {
         hamster_velocity.y += levelGetGravity(active_level) * GetFrameTime();
-        hamster_velocity.x -=
-            ((hamster_velocity.x > 0) ? -1 : 1) * air_friction * GetFrameTime();
+        hamsterApplyFriction(air_friction);
         hamster_ground_buffer_timer -= GetFrameTime();
     }
 
-    // hamster_velocity = Vector2ClampValue(hamster_velocity,
-    // -hamster_max_speed,
-    //                                      hamster_max_speed);
+    if (hamster_velocity.x > hamster_max_speed * GetFrameTime()) {
+        hamster_velocity.x = hamster_max_speed * GetFrameTime();
+    }
 
-    hamster_velocity.x = (hamster_velocity.x < hamster_max_speed)
-                             ? hamster_velocity.x
-                             : hamster_max_speed;
+    if (-hamster_velocity.x > hamster_max_speed * GetFrameTime()) {
+        hamster_velocity.x = -hamster_max_speed * GetFrameTime();
+    }
 
     hamster_rec.x += hamster_velocity.x;
     hamster_rec.y += hamster_velocity.y;
