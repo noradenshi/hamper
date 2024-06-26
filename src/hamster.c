@@ -13,6 +13,7 @@
 const Vector2 hamster_start_pos = {40, -36}; // center
 Rectangle hamster_rec = (Rectangle){hamster_start_pos.x, hamster_start_pos.y,
                                     HAMSTER_SIZE, HAMSTER_SIZE};
+
 Vector2 hamster_velocity = {0};
 Vector2 hamster_direction = {0};
 
@@ -70,8 +71,15 @@ void hamsterHandleCollisions(Collisions *collisions) {
     colls = collisions;
     hamster_is_grounded = false;
 
-    if (collisions->rec_y.height > .0f) {
-        if (collisions->rec_y.y == hamster_rec.y) {
+    Vector2 hamster_ground_check_prev = hamster_ground_check;
+    hamster_ground_check = (Vector2){hamster_rec.x + HAMSTER_SIZE / 2.f,
+                                     hamster_rec.y + HAMSTER_SIZE};
+    if (CheckCollisionPointRec(hamster_ground_check, collisions->rec_y)) {
+        hamster_is_grounded = true;
+        hamster_rec.y = (int)collisions->rec_y.y - HAMSTER_SIZE;
+        hamster_velocity.y = .0f;
+    } else if (collisions->rec_y.height > .001f) {
+        if ((int)collisions->rec_y.y == (int)hamster_rec.y) {
             hamster_rec.y += collisions->rec_y.height;
         } else {
             hamster_is_grounded = true;
@@ -80,20 +88,18 @@ void hamsterHandleCollisions(Collisions *collisions) {
         hamster_velocity.y = .0f;
     }
 
-    if (collisions->rec_x.width > .0f) {
-        if (collisions->rec_x.x == hamster_rec.x) {
-            hamster_rec.x += collisions->rec_x.width;
+    if (collisions->rec_x.width > .001f) {
+        if ((int)collisions->rec_x.x == (int)hamster_rec.x) {
+            hamster_rec.x = collisions->rec_x.x + collisions->rec_x.width;
         } else {
             hamster_rec.x = collisions->rec_x.x - HAMSTER_SIZE;
         }
         hamster_velocity.x = .0f;
     }
 
-    hamster_ground_check = (Vector2){hamster_rec.x + HAMSTER_SIZE / 2.f,
-                                     hamster_rec.y + HAMSTER_SIZE};
     if (hamster_velocity.y >= 0.f &&
-        alleyLineCheckCollisions(&hamster_ground_check)) {
-
+        alleyLineCheckCollisions(&hamster_ground_check_prev,
+                                 &hamster_ground_check)) {
         hamster_is_grounded = true;
 
         hamster_velocity =
@@ -134,7 +140,7 @@ void hamsterApplyFriction(float friction) {
         return;
     }
 
-    if (hamster_velocity.x >= 0.f) {
+    if (hamster_velocity.x > 0.f) {
         hamster_velocity.x -= friction * GetFrameTime();
         return;
     }
@@ -172,11 +178,12 @@ void hamsterUpdate() {
         hamster_ground_buffer_timer -= GetFrameTime();
     }
 
-    if (hamster_velocity.x > hamster_max_speed * GetFrameTime()) {
+    if (fabsf(hamster_velocity.y) < .01f)
+        hamster_velocity.y = 0.f;
+    else if (hamster_velocity.x > hamster_max_speed * GetFrameTime()) {
         hamster_velocity.x = hamster_max_speed * GetFrameTime();
     }
-
-    if (-hamster_velocity.x > hamster_max_speed * GetFrameTime()) {
+    else if (-hamster_velocity.x > hamster_max_speed * GetFrameTime()) {
         hamster_velocity.x = -hamster_max_speed * GetFrameTime();
     }
 

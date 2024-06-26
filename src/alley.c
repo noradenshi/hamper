@@ -86,9 +86,10 @@ void alleyDraw() {
 }
 
 void alleyHUDDraw() {
-//    const char *lines_text = TextFormat("lines: %d", alley_available_lines);
-//    DrawText(lines_text, window_data.WIDTH - MeasureText(lines_text, 36) - 10,
-//             10, 36, WHITE);
+    //    const char *lines_text = TextFormat("lines: %d",
+    //    alley_available_lines); DrawText(lines_text, window_data.WIDTH -
+    //    MeasureText(lines_text, 36) - 10,
+    //             10, 36, WHITE);
 }
 
 Vector2 alleyLineGetNormal() {
@@ -103,6 +104,6 @@ Vector2 alleyLineGetNormal() {
 }
 
 // TODO: change to line-line collision, so player cannot go through the line
-bool alleyLineCheckCollisions(Vector2 *point) {
-    return CheckCollisionPointLine(*point, points[0], points[1], 4);
+bool alleyLineCheckCollisions(Vector2 *prev, Vector2 *point) {
+    return CheckCollisionLines(*prev, *point, points[0], points[1], nullptr);
 }

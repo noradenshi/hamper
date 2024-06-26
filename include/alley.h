@@ -6,5 +6,5 @@ void alleyUpdate();
 void alleyDraw();
 void alleyHUDDraw();
 
-bool alleyLineCheckCollisions(Vector2 *point);
+bool alleyLineCheckCollisions(Vector2 *prev, Vector2 *point);
 Vector2 alleyLineGetNormal();

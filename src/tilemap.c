@@ -1,7 +1,7 @@
 #include "tilemap.h"
-#include "gamestate.h"
 #include "resources.h"
 #include <errno.h>
+#include <math.h>
 #include <raylib.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -116,6 +116,7 @@ Tilemap *tilemapLoad(const char *filename) {
     return tilemap;
 }
 
+#define EPSILON 1.f
 Collisions *tilemapGetCollisions(Tilemap *tilemap, Rectangle rectangle) {
     collisions = (Collisions){0};
     for (int i = 0; i < tilemap->size; i++) {
@@ -123,8 +124,10 @@ Collisions *tilemapGetCollisions(Tilemap *tilemap, Rectangle rectangle) {
             continue;
 
         Rectangle rect = GetCollisionRec(rectangle, tilemap->tiles[i].pos);
-        if (rect.width > 3.f && rect.width > rect.height) { // y axis
-            if (collisions.rec_y.width == 0.f) {
+        if (fabsf(rect.width - 3.f) > EPSILON && rect.width > 3.f &&
+            fabsf(rect.width - rect.height) > EPSILON &&
+            rect.width > rect.height) { // y axis
+            if (fabsf(collisions.rec_y.width) < EPSILON) {
                 collisions.rec_y = rect;
             } else {
                 collisions.rec_y.height += rect.height;
@@ -134,8 +137,10 @@ Collisions *tilemapGetCollisions(Tilemap *tilemap, Rectangle rectangle) {
 
                 continue;
             }
-        } else if (rect.height > 3.f && rect.height > rect.width) {
-            if (collisions.rec_x.width == 0.f) {
+        } else if (fabsf(rect.height - 3.f) > EPSILON && rect.height > 3.f &&
+                   fabsf(rect.height - rect.width) > EPSILON &&
+                   rect.height > rect.width) {
+            if (fabsf(collisions.rec_x.width) < EPSILON) {
                 collisions.rec_x = rect;
             } else {
                 collisions.rec_x.width += rect.width;
