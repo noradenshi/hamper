@@ -19,7 +19,6 @@ struct _Tilemap {
     Tile *tiles;
 };
 
-Collisions collisions;
 const Vector2 tile_origin = {0};
 
 // private
@@ -116,44 +115,60 @@ Tilemap *tilemapLoad(const char *filename) {
     return tilemap;
 }
 
-#define EPSILON 1.f
+Collisions collisions;
+
 Collisions *tilemapGetCollisions(Tilemap *tilemap, Rectangle rectangle) {
     collisions = (Collisions){0};
+    bool is_rec_y = false;
+    bool is_rec_x = false;
+
     for (int i = 0; i < tilemap->size; i++) {
         if (tilemap->tiles[i].src_id == -1)
             continue;
 
         Rectangle rect = GetCollisionRec(rectangle, tilemap->tiles[i].pos);
-        if (fabsf(rect.width - 3.f) > EPSILON && rect.width > 3.f &&
-            fabsf(rect.width - rect.height) > EPSILON &&
-            rect.width > rect.height) { // y axis
-            if (fabsf(collisions.rec_y.width) < EPSILON) {
-                collisions.rec_y = rect;
-            } else {
-                collisions.rec_y.height += rect.height;
 
-                if (rect.y < collisions.rec_y.y)
-                    collisions.rec_y.y = rect.y;
+        if (fabsf(rect.width - rect.height) < 1.f)
+            continue;
 
+        if (rect.width < rect.height ||
+            (is_rec_x && collisions.rec_x.x == rect.x)) {
+
+            if (rect.height < 3.f)
                 continue;
-            }
-        } else if (fabsf(rect.height - 3.f) > EPSILON && rect.height > 3.f &&
-                   fabsf(rect.height - rect.width) > EPSILON &&
-                   rect.height > rect.width) {
-            if (fabsf(collisions.rec_x.width) < EPSILON) {
+
+            if (!is_rec_x) {
                 collisions.rec_x = rect;
-            } else {
-                collisions.rec_x.width += rect.width;
-
-                if (rect.x < collisions.rec_x.x)
-                    collisions.rec_x.x = rect.x;
-
+                is_rec_x = true;
                 continue;
             }
+
+            if (collisions.rec_x.y > rect.y)
+                collisions.rec_x.y = rect.y;
+
+            collisions.rec_x.height += rect.height;
+            continue;
         }
 
-        // maybe return early if both axis are exhausted
+        if (rect.width > rect.height ||
+            (is_rec_y && collisions.rec_y.y == rect.y)) {
+
+            if (rect.width < 3.f)
+                continue;
+
+            if (!is_rec_y) {
+                collisions.rec_y = rect;
+                is_rec_y = true;
+                continue;
+            }
+
+            if (collisions.rec_y.x > rect.x)
+                collisions.rec_y.x = rect.x;
+
+            collisions.rec_y.width += rect.width;
+        }
     }
+
     return &collisions;
 }
 

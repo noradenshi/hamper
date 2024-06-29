@@ -50,9 +50,8 @@ Tilemap *levelGetTilemap(Level level) { return levels[level].tilemap; }
 
 const char *levelsFilename(Level level) { return tilemap_filenames[level]; }
 
-void levelHandleCollision(Level level, Rectangle *rec) {
-    Collisions *collisions = tilemapGetCollisions(levels[level].tilemap, *rec);
-
+void levelHandleCollisions(Level level) {
+    Collisions *collisions = tilemapGetCollisions(levels[level].tilemap, *hamsterGetRect());
     hamsterHandleCollisions(collisions);
 }
 

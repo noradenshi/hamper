@@ -40,7 +40,7 @@ int main() {
         case GSTATE_PLAYING:
             keybindUpdate(ACTIONS_GAME);
             hamsterUpdate();
-            levelHandleCollision(active_level, hamsterGetRect());
+            levelHandleCollisions(active_level);
             levelUpdateEntities(active_level);
 
             // if (GetMouseDelta().x != .0f || GetMouseDelta().y != .0f)

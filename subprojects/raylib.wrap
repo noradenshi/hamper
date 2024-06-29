@@ -1,0 +1,9 @@
+[wrap-file]
+directory = raylib-5.0_win64_mingw-w64
+source_url = https://github.com/raysan5/raylib/releases/download/5.0/raylib-5.0_win64_mingw-w64.zip
+source_filename = raylib-5.0_win64_mingw-w64.zip
+source_hash = 17dd46401858ca5d747045089bfdedf64abc83848e90733135cb1edfd711f3a6
+patch_directory = libraylib
+
+[privide]
+raylib = raylib_dep

@@ -6,7 +6,7 @@ project('hamper', 'c',
 
 dir = meson.current_source_dir()
 cc = meson.get_compiler('c')
-deps = [ cc.find_library('raylib'), cc.find_library('m') ]
+deps = [ dependency('raylib'), cc.find_library('m') ]
 
 sources = [
   'src/main.c',

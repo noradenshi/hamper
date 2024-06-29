@@ -9,7 +9,7 @@ const char *levelsFilename(Level level);
 void levelsUnload();
 
 float levelGetGravity(Level level);
-void levelHandleCollision(Level level, Rectangle *rec);
+void levelHandleCollisions(Level level);
 void levelUpdateEntities(Level level);
 void levelDraw(Level level);
 Tilemap *levelGetTilemap(Level level);

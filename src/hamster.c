@@ -71,24 +71,18 @@ void hamsterHandleCollisions(Collisions *collisions) {
     colls = collisions;
     hamster_is_grounded = false;
 
-    Vector2 hamster_ground_check_prev = hamster_ground_check;
-    hamster_ground_check = (Vector2){hamster_rec.x + HAMSTER_SIZE / 2.f,
-                                     hamster_rec.y + HAMSTER_SIZE};
-    if (CheckCollisionPointRec(hamster_ground_check, collisions->rec_y)) {
-        hamster_is_grounded = true;
-        hamster_rec.y = (int)collisions->rec_y.y - HAMSTER_SIZE;
-        hamster_velocity.y = .0f;
-    } else if (collisions->rec_y.height > .001f) {
+    if (collisions->rec_y.height != .0f) {
         if ((int)collisions->rec_y.y == (int)hamster_rec.y) {
             hamster_rec.y += collisions->rec_y.height;
         } else {
             hamster_is_grounded = true;
             hamster_rec.y = collisions->rec_y.y - HAMSTER_SIZE;
+            // hamster_rec.y -= collisions->rec_y.height;
         }
         hamster_velocity.y = .0f;
     }
 
-    if (collisions->rec_x.width > .001f) {
+    if (collisions->rec_x.width != .0f) {
         if ((int)collisions->rec_x.x == (int)hamster_rec.x) {
             hamster_rec.x = collisions->rec_x.x + collisions->rec_x.width;
         } else {
@@ -96,6 +90,10 @@ void hamsterHandleCollisions(Collisions *collisions) {
         }
         hamster_velocity.x = .0f;
     }
+
+    Vector2 hamster_ground_check_prev = hamster_ground_check;
+    hamster_ground_check = (Vector2){hamster_rec.x + HAMSTER_SIZE / 2.f,
+                                     hamster_rec.y + HAMSTER_SIZE};
 
     if (hamster_velocity.y >= 0.f &&
         alleyLineCheckCollisions(&hamster_ground_check_prev,
@@ -180,10 +178,10 @@ void hamsterUpdate() {
 
     if (fabsf(hamster_velocity.y) < .01f)
         hamster_velocity.y = 0.f;
-    else if (hamster_velocity.x > hamster_max_speed * GetFrameTime()) {
+
+    if (hamster_velocity.x > hamster_max_speed * GetFrameTime()) {
         hamster_velocity.x = hamster_max_speed * GetFrameTime();
-    }
-    else if (-hamster_velocity.x > hamster_max_speed * GetFrameTime()) {
+    } else if (-hamster_velocity.x > hamster_max_speed * GetFrameTime()) {
         hamster_velocity.x = -hamster_max_speed * GetFrameTime();
     }
 
