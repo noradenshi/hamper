@@ -1,3 +1,5 @@
 .cache/
 subprojects/packagecache/
 subprojects/raylib-*/
+build*/
+bin/exe

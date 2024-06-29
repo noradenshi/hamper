@@ -118,9 +118,8 @@ Tilemap *tilemapLoad(const char *filename) {
 Collisions collisions;
 
 Collisions *tilemapGetCollisions(Tilemap *tilemap, Rectangle rectangle) {
-    collisions = (Collisions){0};
-    bool is_rec_y = false;
-    bool is_rec_x = false;
+    Rectangle recs[2] = {0};
+    bool is_rec[2] = {0};
 
     for (int i = 0; i < tilemap->size; i++) {
         if (tilemap->tiles[i].src_id == -1)
@@ -128,47 +127,61 @@ Collisions *tilemapGetCollisions(Tilemap *tilemap, Rectangle rectangle) {
 
         Rectangle rect = GetCollisionRec(rectangle, tilemap->tiles[i].pos);
 
-        if (fabsf(rect.width - rect.height) < 1.f)
+        if (rect.width == 0.f || rect.height == 0.f)
             continue;
 
-        if (rect.width < rect.height ||
-            (is_rec_x && collisions.rec_x.x == rect.x)) {
+        if (!is_rec[0]) {
+            recs[0] = rect;
+            is_rec[0] = true;
+            continue;
+        }
+        if (rect.x == recs[0].x && rect.width == recs[0].width) {
+            if (recs[0].y > rect.y)
+                recs[0].y = rect.y;
 
-            if (rect.height < 3.f)
-                continue;
+            recs[0].height += rect.height;
+            continue;
+        }
+        if (rect.y == recs[0].y && rect.height == recs[0].height) {
+            if (recs[0].x > rect.x)
+                recs[0].x = rect.x;
 
-            if (!is_rec_x) {
-                collisions.rec_x = rect;
-                is_rec_x = true;
-                continue;
-            }
-
-            if (collisions.rec_x.y > rect.y)
-                collisions.rec_x.y = rect.y;
-
-            collisions.rec_x.height += rect.height;
+            recs[0].width += rect.width;
             continue;
         }
 
-        if (rect.width > rect.height ||
-            (is_rec_y && collisions.rec_y.y == rect.y)) {
+        if (!is_rec[1]) {
+            recs[1] = rect;
+            is_rec[1] = true;
+            continue;
+        }
+        if (rect.x == recs[1].x && rect.width == recs[1].width) {
+            if (recs[1].y > rect.y)
+                recs[1].y = rect.y;
 
-            if (rect.width < 3.f)
-                continue;
+            recs[1].height += rect.height;
+            continue;
+        }
+        if (rect.y == recs[1].y && rect.height == recs[1].height) {
+            if (recs[1].x > rect.x)
+                recs[1].x = rect.x;
 
-            if (!is_rec_y) {
-                collisions.rec_y = rect;
-                is_rec_y = true;
-                continue;
-            }
-
-            if (collisions.rec_y.x > rect.x)
-                collisions.rec_y.x = rect.x;
-
-            collisions.rec_y.width += rect.width;
+            recs[1].width += rect.width;
+            continue;
         }
     }
 
+    collisions = (Collisions){0};
+    if (!is_rec[0])
+        return &collisions;
+
+    if (recs[0].width > recs[0].height) {
+        collisions.rec_y = recs[0];
+        collisions.rec_x = recs[1];
+    } else {
+        collisions.rec_y = recs[1];
+        collisions.rec_x = recs[0];
+    }
     return &collisions;
 }
 
