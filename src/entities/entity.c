@@ -1,4 +1,4 @@
-#include "entity.h"
+#include "entities/entity.h"
 #include "resources.h"
 #include <raylib.h>
 

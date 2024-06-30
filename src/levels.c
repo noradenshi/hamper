@@ -1,6 +1,6 @@
 #include "levels.h"
-#include "entity.h"
-#include "hamster.h"
+#include "entities/entity.h"
+#include "entities/hamster.h"
 #include "tilemap.h"
 #include <raylib.h>
 #include <raymath.h>

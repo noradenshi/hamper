@@ -1,4 +1,4 @@
-#include "alley.h"
+#include "entities/alley.h"
 #include "animation.h"
 #include "resources.h"
 #include <math.h>

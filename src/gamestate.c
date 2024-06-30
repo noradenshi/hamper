@@ -1,9 +1,9 @@
 #include "gamestate.h"
-#include "alley.h"
-#include "editor.h"
-#include "hamster.h"
+#include "entities/alley.h"
+#include "scenes/editor.h"
+#include "entities/hamster.h"
 #include "levels.h"
-#include "menu.h"
+#include "scenes/menu.h"
 #include "resources.h"
 #include <raylib.h>
 #include <stdlib.h>

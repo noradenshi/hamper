@@ -1,7 +1,7 @@
 #include "keybinds.h"
-#include "editor.h"
+#include "scenes/editor.h"
 #include "gamestate.h"
-#include "hamster.h"
+#include "entities/hamster.h"
 #include "levels.h"
 #include <raylib.h>
 

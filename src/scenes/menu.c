@@ -1,9 +1,10 @@
-#include "menu.h"
+#include "scenes/menu.h"
 #include "animation.h"
-#include "button.h"
 #include "gamestate.h"
 #include "levels.h"
 #include "resources.h"
+#include "ui/button.h"
+#include "ui/inputfield.h"
 #include <raylib.h>
 
 #define MENU_BUTTON_WIDTH 220
@@ -37,6 +38,8 @@ Button buttons[] = {{.text = "PLAY", &menu_play},
                     //{.text = "SETTINGS", &menu_settings},
                     {.text = "EXIT", &menu_exit}};
 
+InputField inputfield = {(Rectangle){20, 20, 300, 100}};
+
 void menuInit() {
     animationSetFlipped(animations.alley_idle, true);
     animationSetFlipped(animations.hamster_idle, false);
@@ -46,6 +49,8 @@ void menuInit() {
 Camera2D *menuGetCamera() { return &menu_camera; }
 
 void menuUpdate() {
+    inputfieldUpdate(&inputfield);
+
     for (int i = 0; i < menu_buttons_size; i++) {
         buttons[i].rectangle = (Rectangle){
             window_data.WIDTH / 2.f - MENU_BUTTON_WIDTH / 2.f,
@@ -92,4 +97,6 @@ void menuDraw() {
 
     for (int i = 0; i < menu_buttons_size; i++)
         buttonDraw(&buttons[i]);
+
+    inputfieldDraw(&inputfield);
 }

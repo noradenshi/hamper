@@ -1,5 +1,5 @@
-#include "hamster.h"
-#include "alley.h"
+#include "entities/hamster.h"
+#include "entities/alley.h"
 #include "animation.h"
 #include "gamestate.h"
 #include "resources.h"

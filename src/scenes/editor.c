@@ -1,4 +1,4 @@
-#include "editor.h"
+#include "scenes/editor.h"
 #include "gamestate.h"
 #include "levels.h"
 #include "resources.h"
@@ -25,6 +25,8 @@ struct _Toolbox {
 
 Camera2D editor_camera = {.zoom = 1.f};
 Tilemap *active_tilemap;
+
+bool mouse_is_held = false;
 
 Camera2D *editorGetCamera() { return &editor_camera; }
 
@@ -86,7 +88,10 @@ void editorUpdate() {
     selection.mouse_tile.y =
         (int)selection.mouse_tile.y - (int)selection.mouse_tile.y % 8;
 
-    if (IsMouseButtonDown(0)) {
+    if (IsMouseButtonPressed(0))
+        mouse_is_held = true;
+
+    if (mouse_is_held && IsMouseButtonDown(0)) {
         tilemapSetTile(active_tilemap,
                        (Rectangle){selection.mouse_tile.x,
                                    selection.mouse_tile.y, TILE_SIZE,

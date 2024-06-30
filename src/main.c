@@ -1,10 +1,10 @@
-#include "alley.h"
-#include "editor.h"
+#include "entities/alley.h"
+#include "scenes/editor.h"
 #include "gamestate.h"
-#include "hamster.h"
+#include "entities/hamster.h"
 #include "keybinds.h"
 #include "levels.h"
-#include "menu.h"
+#include "scenes/menu.h"
 #include "resources.h"
 #include <raylib.h>
 #include <raymath.h>

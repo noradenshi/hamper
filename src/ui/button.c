@@ -1,4 +1,4 @@
-#include "button.h"
+#include "ui/button.h"
 #include <raylib.h>
 
 void buttonUpdate(Button *button) {

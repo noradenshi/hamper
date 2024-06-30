@@ -10,18 +10,22 @@ deps = [ dependency('raylib'), cc.find_library('m') ]
 
 sources = [
   'src/main.c',
-  'src/hamster.c',
-  'src/editor.c',
   'src/resources.c',
   'src/tilemap.c',
   'src/animation.c',
   'src/keybinds.c',
   'src/gamestate.c',
-  'src/alley.c',
   'src/levels.c',
-  'src/menu.c',
-  'src/button.c',
-  'src/entity.c',
+
+  'src/scenes/editor.c',
+  'src/scenes/menu.c',
+
+  'src/ui/button.c',
+  'src/ui/inputfield.c',
+
+  'src/entities/hamster.c',
+  'src/entities/alley.c',
+  'src/entities/entity.c',
 ]
 
 executable('exe', sources,
