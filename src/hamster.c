@@ -176,8 +176,8 @@ void hamsterUpdate() {
         //     GetFrameTime();
     }
 
-    if (fabsf(hamster_velocity.y) < .0001f)
-        hamster_velocity.y = 0.f;
+    // if (fabsf(hamster_velocity.y) < .0001f)
+    //     hamster_velocity.y = 0.f;
 
     if (hamster_velocity.x > hamster_max_speed * GetFrameTime()) {
         hamster_velocity.x = hamster_max_speed * GetFrameTime();
