@@ -8,11 +8,9 @@
 #include <raylib.h>
 #include <raymath.h>
 
-#define HAMSTER_SIZE 16
-
 const Vector2 hamster_start_pos = {40, -36}; // center
-Rectangle hamster_rec = (Rectangle){hamster_start_pos.x, hamster_start_pos.y,
-                                    HAMSTER_SIZE, HAMSTER_SIZE};
+Rectangle hamster_rec =
+    (Rectangle){hamster_start_pos.x, hamster_start_pos.y, 16, 16};
 
 Vector2 hamster_velocity = {0};
 Vector2 hamster_direction = {0};
@@ -35,10 +33,10 @@ Animation *hamster_anim;
 Camera2D hamster_camera;
 
 // DEBUG
-Collisions *colls;
+Collisions *colls_debug;
 
 // TEMP
-const float air_friction = 10.f;
+const float air_drag = 10.f;
 const float grass_friction = 15.f;
 
 void hamsterInit() {
@@ -53,7 +51,7 @@ void hamsterInit() {
 
 void hamsterReset() {
     hamster_rec = (Rectangle){hamster_start_pos.x, hamster_start_pos.y,
-                              HAMSTER_SIZE, HAMSTER_SIZE};
+                              hamster_rec.width, hamster_rec.height};
     hamster_velocity = (Vector2){0.f, 0.f};
 }
 
@@ -68,32 +66,31 @@ float hamsterGetGroundBufferTime() { return hamster_ground_buffer_timer; }
 Rectangle *hamsterGetRect() { return &hamster_rec; }
 
 void hamsterHandleCollisions(Collisions *collisions) {
-    colls = collisions;
+    colls_debug = collisions;
     hamster_is_grounded = false;
 
     if (collisions->rec_y.height != .0f) {
-        if ((int)collisions->rec_y.y == (int)hamster_rec.y) {
-            hamster_rec.y += collisions->rec_y.height;
-        } else {
+        if (fabsf(collisions->rec_y.y - hamster_rec.y) > 0.0001f) {
             hamster_is_grounded = true;
-            hamster_rec.y = collisions->rec_y.y - HAMSTER_SIZE;
-            // hamster_rec.y -= collisions->rec_y.height;
+            hamster_rec.y -= collisions->rec_y.height - 0.001f;
+        } else {
+            hamster_rec.y += collisions->rec_y.height;
         }
         hamster_velocity.y = .0f;
     }
 
     if (collisions->rec_x.width != .0f) {
-        if ((int)collisions->rec_x.x == (int)hamster_rec.x) {
+        if (fabsf(collisions->rec_x.x - hamster_rec.x) < 0.0001f) {
             hamster_rec.x = collisions->rec_x.x + collisions->rec_x.width;
         } else {
-            hamster_rec.x = collisions->rec_x.x - HAMSTER_SIZE;
+            hamster_rec.x = collisions->rec_x.x - hamster_rec.width;
         }
         hamster_velocity.x = .0f;
     }
 
     Vector2 hamster_ground_check_prev = hamster_ground_check;
-    hamster_ground_check = (Vector2){hamster_rec.x + HAMSTER_SIZE / 2.f,
-                                     hamster_rec.y + HAMSTER_SIZE};
+    hamster_ground_check = (Vector2){hamster_rec.x + hamster_rec.width / 2.f,
+                                     hamster_rec.y + hamster_rec.height};
 
     if (hamster_velocity.y >= 0.f &&
         alleyLineCheckCollisions(&hamster_ground_check_prev,
@@ -132,18 +129,13 @@ void hamsterJump() {
     hamster_jump_buffer_timer = hamster_buffer_amount;
 }
 
-void hamsterApplyFriction(float friction) {
-    if (fabsf(hamster_velocity.x) < .01f) {
-        hamster_velocity.x = 0.f;
+void hamsterApplyFriction(float friction, float speed) {
+    float friction_dt = friction * GetFrameTime();
+    if (friction_dt < speed) {
+        hamster_velocity.x += friction_dt * -(hamster_velocity.x / speed);
         return;
     }
-
-    if (hamster_velocity.x > 0.f) {
-        hamster_velocity.x -= friction * GetFrameTime();
-        return;
-    }
-
-    hamster_velocity.x += friction * GetFrameTime();
+    hamster_velocity.x = 0.f;
 }
 
 void hamsterUpdate() {
@@ -160,6 +152,9 @@ void hamsterUpdate() {
         hamster_jump_buffer_timer -= GetFrameTime();
     }
 
+    float speed = fabsf(hamster_velocity.x);
+    float prev_velocity = hamster_velocity.x;
+
     if (hamster_is_grounded) {
         if (hamster_horizontal != 0 && !IsSoundPlaying(sounds.walk_grass))
             PlaySound(sounds.walk_grass);
@@ -168,15 +163,20 @@ void hamsterUpdate() {
             hamsterJump();
 
         hamster_jump_buffer_timer = 0.f;
-        hamsterApplyFriction(grass_friction);
         hamster_ground_buffer_timer = hamster_buffer_amount;
+
+        hamsterApplyFriction(grass_friction, speed);
     } else {
         hamster_velocity.y += levelGetGravity(active_level) * GetFrameTime();
-        hamsterApplyFriction(air_friction);
         hamster_ground_buffer_timer -= GetFrameTime();
+
+        hamsterApplyFriction(air_drag, speed);
+        // hamster_velocity.x +=
+        //     (air_drag * speed + 0.f) * -hamster_velocity.x *
+        //     GetFrameTime();
     }
 
-    if (fabsf(hamster_velocity.y) < .01f)
+    if (fabsf(hamster_velocity.y) < .0001f)
         hamster_velocity.y = 0.f;
 
     if (hamster_velocity.x > hamster_max_speed * GetFrameTime()) {
@@ -185,7 +185,7 @@ void hamsterUpdate() {
         hamster_velocity.x = -hamster_max_speed * GetFrameTime();
     }
 
-    hamster_rec.x += hamster_velocity.x;
+    hamster_rec.x += (hamster_velocity.x + prev_velocity) / 2;
     hamster_rec.y += hamster_velocity.y;
 
     hamster_camera.target = Vector2Lerp(
@@ -206,9 +206,9 @@ void hamsterDraw() {
                    hamster_rec, Vector2Zero(), 0.f, WHITE);
 
     if (IS_DEBUG) {
-        if (colls != nullptr) {
-            DrawRectangleRec(colls->rec_y, RED);
-            DrawRectangleRec(colls->rec_x, RED);
+        if (colls_debug != nullptr) {
+            DrawRectangleRec(colls_debug->rec_y, RED);
+            DrawRectangleRec(colls_debug->rec_x, RED);
         }
 
         DrawCircleV(hamster_ground_check, 1.f, BLUE);
@@ -218,15 +218,17 @@ void hamsterDraw() {
 }
 
 void hamsterDrawHUD() {
-    if (colls == nullptr)
+    if (colls_debug == nullptr || !IS_DEBUG)
         return;
 
     const char *text_y =
-        TextFormat("rec_y: %.2f %.2f %.2f %.2f", colls->rec_y.x, colls->rec_y.y,
-                   colls->rec_y.width, colls->rec_y.height);
+        TextFormat("rec_y: %.2f %.2f %.2f %.2f", colls_debug->rec_y.x,
+                   colls_debug->rec_y.y, colls_debug->rec_y.width,
+                   colls_debug->rec_y.height);
     const char *text_x =
-        TextFormat("rec_x: %.2f %.2f %.2f %.2f", colls->rec_x.x, colls->rec_x.x,
-                   colls->rec_x.width, colls->rec_x.height);
+        TextFormat("rec_x: %.2f %.2f %.2f %.2f", colls_debug->rec_x.x,
+                   colls_debug->rec_x.x, colls_debug->rec_x.width,
+                   colls_debug->rec_x.height);
 
     DrawText(text_x, window_data.WIDTH - MeasureText(text_x, 20),
              window_data.HEIGHT - 25 * 2, 20, WHITE);
