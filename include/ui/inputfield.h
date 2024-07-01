@@ -5,6 +5,7 @@
 
 typedef struct _InputField {
     Rectangle rectangle;
+    int font_size;
     void (*on_submit)(void);
     char text[TEXT_MAX_LENGTH];
     int cursor_pos;

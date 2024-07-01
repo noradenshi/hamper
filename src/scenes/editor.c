@@ -3,8 +3,11 @@
 #include "levels.h"
 #include "resources.h"
 #include "tilemap.h"
+#include "ui/inputfield.h"
 #include <raylib.h>
 #include <raymath.h>
+#include <stdlib.h>
+#include <string.h>
 
 struct _Selection {
     int id;
@@ -26,20 +29,40 @@ struct _Toolbox {
 Camera2D editor_camera = {.zoom = 1.f};
 Tilemap *active_tilemap;
 
+#define SAVE_PROMPT_WIDTH 400
+#define SAVE_PROMPT_FONTSIZE 40
+void saveAsCallback(void);
+
+InputField file_save_as = {
+    (Rectangle){0, 0, SAVE_PROMPT_WIDTH, SAVE_PROMPT_FONTSIZE * 1.5f},
+    SAVE_PROMPT_FONTSIZE, saveAsCallback};
+
 bool mouse_is_held = false;
 
 Camera2D *editorGetCamera() { return &editor_camera; }
 
-void editorSave() {
-    tilemapSave(active_tilemap, levelsFilename(active_level));
+const char levels_path[] = "resources/levels/";
+void editorSaveAs(const char *filename) {
+    char *path = malloc(strlen(levels_path) + strlen(filename));
+    strcpy(path, levels_path);
+    tilemapSave(active_tilemap, strcat(path, filename));
     TraceLog(LOG_INFO, "Saved!");
 }
+
+void saveAsCallback(void) { editorSaveAs(file_save_as.text); }
+
+void editorSave() { editorSaveAs(levelsFilename(active_level)); }
 
 void editorSetTilemap(Tilemap *tilemap) { active_tilemap = tilemap; }
 
 void editorCameraUpdate() { editor_camera.offset = window_data.CENTER; }
 
 void editorUpdate() {
+    if (true) {
+        inputfieldUpdate(&file_save_as);
+        return;
+    }
+
     if (IsMouseButtonDown(2)) {
         editor_camera.target = Vector2Add(
             editor_camera.target,
@@ -133,5 +156,9 @@ void editorDrawEnd2D() {
         DrawRectangle(toolbox.position.x + toolbox.scale * col,
                       toolbox.position.y + toolbox.scale * row, toolbox.scale,
                       toolbox.scale, (Color){200, 200, 200, 100});
+    }
+
+    if (true) {
+        inputfieldDraw(&file_save_as);
     }
 }

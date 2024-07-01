@@ -27,7 +27,8 @@ void inputfieldUpdate(InputField *inputfield) {
         default:
             if (inputfield->cursor_pos >= TEXT_MAX_LENGTH)
                 break;
-            if ((key >= KEY_APOSTROPHE && key <= KEY_NINE) || key == KEY_SPACE) {
+            if ((key >= KEY_APOSTROPHE && key <= KEY_NINE) ||
+                key == KEY_SPACE) {
                 inputfield->text[inputfield->cursor_pos] = (char)key;
                 inputfield->cursor_pos++;
                 break;
@@ -61,8 +62,9 @@ void inputfieldDraw(InputField *inputfield) {
                      (inputfield->is_hover) ? LIGHTGRAY : WHITE);
 
     DrawText(inputfield->text,
-             inputfield->rectangle.x + (inputfield->rectangle.width -
-                                        MeasureText(inputfield->text, 30.f)) /
-                                           2.f,
-             inputfield->rectangle.y + 15.f, 30.f, BLACK);
+             inputfield->rectangle.x +
+                 (inputfield->rectangle.width -
+                  MeasureText(inputfield->text, inputfield->font_size)) /
+                     2.f,
+             inputfield->rectangle.y + 15.f, inputfield->font_size, BLACK);
 }

@@ -14,8 +14,6 @@
 #define MENU_TILE_ZOOM 8.f
 #define MENU_TILE_SIZE 16 * MENU_TILE_ZOOM
 
-#define MENU_TITLE_
-
 const Color TRANSPARENT = (Color){0};
 
 Camera2D menu_camera = (Camera2D){.zoom = MENU_TILE_ZOOM};
@@ -38,8 +36,6 @@ Button buttons[] = {{.text = "PLAY", &menu_play},
                     //{.text = "SETTINGS", &menu_settings},
                     {.text = "EXIT", &menu_exit}};
 
-InputField inputfield = {(Rectangle){20, 20, 300, 100}};
-
 void menuInit() {
     animationSetFlipped(animations.alley_idle, true);
     animationSetFlipped(animations.hamster_idle, false);
@@ -49,8 +45,6 @@ void menuInit() {
 Camera2D *menuGetCamera() { return &menu_camera; }
 
 void menuUpdate() {
-    inputfieldUpdate(&inputfield);
-
     for (int i = 0; i < menu_buttons_size; i++) {
         buttons[i].rectangle = (Rectangle){
             window_data.WIDTH / 2.f - MENU_BUTTON_WIDTH / 2.f,
@@ -97,6 +91,4 @@ void menuDraw() {
 
     for (int i = 0; i < menu_buttons_size; i++)
         buttonDraw(&buttons[i]);
-
-    inputfieldDraw(&inputfield);
 }
