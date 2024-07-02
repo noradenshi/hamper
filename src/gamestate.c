@@ -1,45 +1,52 @@
 #include "gamestate.h"
 #include "entities/alley.h"
-#include "scenes/editor.h"
 #include "entities/hamster.h"
 #include "levels.h"
-#include "scenes/menu.h"
 #include "resources.h"
+#include "scenes/menu.h"
 #include <raylib.h>
 #include <stdlib.h>
 
-GameState gameState;
 bool IS_DEBUG = false;
-Level active_level = LEVEL_MENU;
+Scene scene;
+LevelData *active_level;
 
-GameState gstateGet() { return gameState; }
+Scene sceneGet() { return scene; }
 
-void gstateSet(GameState state) {
-    gameState = state;
-    switch (gameState) {
-    case GSTATE_MENU:
+void sceneLoadLevel(const char *filename) {
+    if (active_level != nullptr) {
+        free(active_level);
+    }
+
+    active_level = levelLoad(filename);
+}
+
+void sceneSet(Scene _scene) {
+    scene = _scene;
+    switch (scene) {
+    case SCENE_MENU:
+        sceneLoadLevel(levelCorePath(LEVEL_MENU));
         menuInit();
         ShowCursor();
         break;
-    case GSTATE_PLAYING:
-        active_level = LEVEL_TMP;
+    case SCENE_PLAYING:
+        sceneLoadLevel(levelCorePath(LEVEL_TMP));
         HideCursor();
         alleySetTarget(
             GetScreenToWorld2D(GetMousePosition(), *hamsterGetCamera()));
         break;
-    case GSTATE_EDITOR:
+    case SCENE_EDITOR:
         ShowCursor();
-        editorSetTilemap(levelGetTilemap(active_level));
         break;
     }
 }
 
-void gstateDebug(float x, float y, int fontsize) {
-    switch (gameState) {
-    case GSTATE_PLAYING:
+void sceneDebug(float x, float y, int fontsize) {
+    switch (scene) {
+    case SCENE_PLAYING:
         DrawText("GAME", x, y, fontsize, WHITE);
         break;
-    case GSTATE_EDITOR:
+    case SCENE_EDITOR:
         DrawText("EDITOR", x, y, fontsize, WHITE);
         break;
     default:
@@ -47,8 +54,8 @@ void gstateDebug(float x, float y, int fontsize) {
     }
 }
 
-void gstateExit() {
-    levelsUnload();
+void sceneExit() {
+    levelUnload(active_level);
     resourcesUnload();
     CloseWindow();
     exit(0);

@@ -2,17 +2,19 @@
 #include "levels.h"
 #include <raylib.h>
 
-// more like scenes really
-typedef enum _GameState {
-    GSTATE_MENU,
-    GSTATE_PLAYING,
-    GSTATE_EDITOR,
-} GameState;
+typedef enum _Scene {
+    SCENE_MENU,
+    SCENE_PLAYING,
+    SCENE_EDITOR,
+} Scene;
 
 extern bool IS_DEBUG;
-extern Level active_level;
+// extern Level active_level;
+extern LevelData *active_level;
 
-GameState gstateGet();
-void gstateSet(GameState state);
-void gstateDebug(float x, float y, int fontsize);
-void gstateExit();
+Scene sceneGet();
+void sceneSet(Scene scene);
+void sceneDebug(float x, float y, int fontsize);
+void sceneExit();
+
+void sceneLoadLevel(const char* filename);

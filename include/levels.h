@@ -3,13 +3,15 @@
 #include <raylib.h>
 
 typedef enum _Level { LEVEL_MENU, LEVEL_TMP, LEVEL_SIZE } Level;
+typedef struct _LevelData LevelData;
+extern LevelData level;
 
-void levelsLoad();
-const char *levelsFilename(Level level);
-void levelsUnload();
+LevelData *levelLoad(const char *filename);
+const char *levelCorePath(Level level);
+void levelUnload(LevelData *level);
 
-float levelGetGravity(Level level);
-void levelHandleCollisions(Level level);
-void levelUpdateEntities(Level level);
-void levelDraw(Level level);
-Tilemap *levelGetTilemap(Level level);
+float levelGetGravity(LevelData *level);
+void levelHandleCollisions(LevelData *level);
+void levelUpdateEntities(LevelData *level);
+void levelDraw(LevelData *level);
+Tilemap *levelGetTilemap(LevelData *level);

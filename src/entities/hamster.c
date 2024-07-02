@@ -167,6 +167,7 @@ void hamsterUpdate() {
 
         hamsterApplyFriction(grass_friction, speed);
     } else {
+        // hamster_velocity.y += levelGetGravity(active_level) * GetFrameTime();
         hamster_velocity.y += levelGetGravity(active_level) * GetFrameTime();
         hamster_ground_buffer_timer -= GetFrameTime();
 

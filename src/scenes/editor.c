@@ -27,7 +27,8 @@ struct _Toolbox {
 } toolbox = {.position = {-1, -1}, .zoom = 2.f};
 
 Camera2D editor_camera = {.zoom = 1.f};
-Tilemap *active_tilemap;
+
+const char levels_path[] = "resources/levels/";
 
 #define SAVE_PROMPT_WIDTH 400
 #define SAVE_PROMPT_FONTSIZE 40
@@ -41,19 +42,22 @@ bool mouse_is_held = false;
 
 Camera2D *editorGetCamera() { return &editor_camera; }
 
-const char levels_path[] = "resources/levels/";
-void editorSaveAs(const char *filename) {
-    char *path = malloc(strlen(levels_path) + strlen(filename));
-    strcpy(path, levels_path);
-    tilemapSave(active_tilemap, strcat(path, filename));
+void editorSave() {
+    tilemapSave(levelGetTilemap(active_level));
     TraceLog(LOG_INFO, "Saved!");
 }
 
+void editorSaveAs(const char *filename) {
+    char *path = malloc(strlen(levels_path) * sizeof(char) +
+                        strlen(filename) * sizeof(char));
+    strcpy(path, levels_path);
+    tilemapSetPath(levelGetTilemap(active_level), path);
+    free(path);
+
+    editorSave();
+}
+
 void saveAsCallback(void) { editorSaveAs(file_save_as.text); }
-
-void editorSave() { editorSaveAs(levelsFilename(active_level)); }
-
-void editorSetTilemap(Tilemap *tilemap) { active_tilemap = tilemap; }
 
 void editorCameraUpdate() { editor_camera.offset = window_data.CENTER; }
 
@@ -115,7 +119,7 @@ void editorUpdate() {
         mouse_is_held = true;
 
     if (mouse_is_held && IsMouseButtonDown(0)) {
-        tilemapSetTile(active_tilemap,
+        tilemapSetTile(levelGetTilemap(active_level),
                        (Rectangle){selection.mouse_tile.x,
                                    selection.mouse_tile.y, TILE_SIZE,
                                    TILE_SIZE},
@@ -123,7 +127,7 @@ void editorUpdate() {
     }
 
     if (IsMouseButtonDown(1)) {
-        tilemapSetTile(active_tilemap,
+        tilemapSetTile(levelGetTilemap(active_level),
                        (Rectangle){selection.mouse_tile.x,
                                    selection.mouse_tile.y, TILE_SIZE,
                                    TILE_SIZE},

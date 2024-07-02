@@ -19,9 +19,9 @@ int main() {
 
     resourcesInit(); // initializes animations as well
     hamsterInit();
-    levelsLoad();
+    sceneLoadLevel("resources/levels/core/test_tmp");
 
-    gstateSet(GSTATE_MENU);
+    sceneSet(SCENE_MENU);
 
     while (!WindowShouldClose()) {
         if (GetScreenHeight() != window_data.HEIGHT ||
@@ -33,11 +33,11 @@ int main() {
 
         keybindUpdate(ACTIONS_GLOBAL);
 
-        switch (gstateGet()) {
-        case GSTATE_MENU:
+        switch (sceneGet()) {
+        case SCENE_MENU:
             menuUpdate();
             break;
-        case GSTATE_PLAYING:
+        case SCENE_PLAYING:
             keybindUpdate(ACTIONS_GAME);
             hamsterUpdate();
             levelHandleCollisions(active_level);
@@ -49,7 +49,7 @@ int main() {
             alleyUpdate();
             break;
 
-        case GSTATE_EDITOR:
+        case SCENE_EDITOR:
             keybindUpdate(ACTIONS_EDITOR);
             editorUpdate();
             break;
@@ -58,11 +58,11 @@ int main() {
         BeginDrawing();
         ClearBackground((Color){90, 110, 120, 255});
 
-        switch (gstateGet()) {
-        case GSTATE_MENU:
+        switch (sceneGet()) {
+        case SCENE_MENU:
             menuDraw();
             break;
-        case GSTATE_PLAYING:
+        case SCENE_PLAYING:
             BeginMode2D(*hamsterGetCamera());
             levelDraw(active_level);
             hamsterDraw();
@@ -72,7 +72,7 @@ int main() {
             alleyHUDDraw();
             break;
 
-        case GSTATE_EDITOR:
+        case SCENE_EDITOR:
             BeginMode2D(*editorGetCamera());
             levelDraw(active_level);
             hamsterDraw();
@@ -81,7 +81,7 @@ int main() {
             break;
         }
 
-        if (IS_DEBUG && gstateGet() != GSTATE_MENU) {
+        if (IS_DEBUG && sceneGet() != SCENE_MENU) {
             DrawText(
                 TextFormat("jump buffer: %.4f", hamsterGetJumpBufferTime()), 5,
                 24 * 2, 24, WHITE);
@@ -94,14 +94,13 @@ int main() {
             //                10, 24 * 4 + 10,
             //                128 * ((float)alleyGetPointCount() /
             //                alleyGetMaxPointCount()), 8, BLACK);
-            gstateDebug(10, window_data.HEIGHT - 35, 30);
+            sceneDebug(10, window_data.HEIGHT - 35, 30);
         }
 
         DrawFPS(0, 0);
         EndDrawing();
     }
 
-    levelsUnload();
     resourcesUnload();
     CloseWindow();
     return 0;

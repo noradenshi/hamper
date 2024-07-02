@@ -50,17 +50,15 @@ void keybindUpdate(ActionSet set) {
             case GLOBAL_EXIT:
                 if (!IsKeyDown(KEY_LEFT_CONTROL))
                     break;
-                gstateExit();
+                sceneExit();
                 break;
 
                 // DEBUG; to be deleted
             case GLOBAL_MAP_MENU:
-                active_level = LEVEL_MENU;
-                editorSetTilemap(levelGetTilemap(active_level));
+                sceneLoadLevel(levelCorePath(LEVEL_MENU));
                 break;
             case GLOBAL_MAP_TMP:
-                active_level = LEVEL_TMP;
-                editorSetTilemap(levelGetTilemap(active_level));
+                sceneLoadLevel(levelCorePath(LEVEL_TMP));
                 break;
             }
         }
@@ -73,7 +71,7 @@ void keybindUpdate(ActionSet set) {
             switch (i) {
 
             case EDITOR_PLAYING:
-                gstateSet(GSTATE_PLAYING);
+                sceneSet(SCENE_PLAYING);
                 break;
 
             case EDITOR_SAVE:
@@ -84,13 +82,12 @@ void keybindUpdate(ActionSet set) {
                 break;
 
             case EDITOR_OPTIONS:
-                gstateSet(GSTATE_MENU);
+                sceneSet(SCENE_MENU);
                 break;
             }
         }
         break;
 
-        // gaem do gaem
     case ACTIONS_GAME:
         hamsterMove(-IsKeyDown(game[GAME_MOVE_LEFT]) +
                     IsKeyDown(game[GAME_MOVE_RIGHT]));
@@ -109,11 +106,11 @@ void keybindUpdate(ActionSet set) {
                 break;
 
             case GAME_OPTIONS:
-                gstateSet(GSTATE_MENU);
+                sceneSet(SCENE_MENU);
                 break;
 
             case GAME_EDITOR:
-                gstateSet(GSTATE_EDITOR);
+                sceneSet(SCENE_EDITOR);
                 break;
 
             }

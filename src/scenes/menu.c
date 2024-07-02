@@ -4,7 +4,6 @@
 #include "levels.h"
 #include "resources.h"
 #include "ui/button.h"
-#include "ui/inputfield.h"
 #include <raylib.h>
 
 #define MENU_BUTTON_WIDTH 220
@@ -26,10 +25,10 @@ const int menu_titles_size = 3;
 
 int menu_buttons_size;
 
-void menu_play() { gstateSet(GSTATE_PLAYING); }
-void menu_editor() { gstateSet(GSTATE_EDITOR); }
+void menu_play() { sceneSet(SCENE_PLAYING); }
+void menu_editor() { sceneSet(SCENE_EDITOR); }
 void menu_settings() { TraceLog(LOG_INFO, "TODO"); }
-void menu_exit() { gstateExit(); }
+void menu_exit() { sceneExit(); }
 
 Button buttons[] = {{.text = "PLAY", &menu_play},
                     {.text = "EDITOR", &menu_editor},
@@ -72,7 +71,7 @@ void menuUpdate() {
 
 void menuDraw() {
     BeginMode2D(menu_camera);
-    tilemapDraw(levelGetTilemap(LEVEL_MENU));
+    tilemapDraw(levelGetTilemap(active_level));
     DrawTexturePro(textures.players,
                    *animationGetFrame(animations.hamster_idle),
                    (Rectangle){40, -16, 16, 16}, (Vector2){0}, 0.f, WHITE);

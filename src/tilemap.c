@@ -1,7 +1,6 @@
 #include "tilemap.h"
 #include "resources.h"
 #include <errno.h>
-#include <math.h>
 #include <raylib.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -16,6 +15,7 @@ struct _Tile {
 struct _Tilemap {
     int capacity;
     int size;
+    char *path;
     Tile *tiles;
 };
 
@@ -48,6 +48,15 @@ Tilemap *tilemapEmpty() {
     }
 
     return tilemap;
+}
+
+int tilemapGetSize(Tilemap *tilemap) { return tilemap->size; }
+
+const char *tilemapGetPath(Tilemap *tilemap) { return tilemap->path; }
+void tilemapSetPath(Tilemap *tilemap, const char *path) {
+    free(tilemap->path);
+    tilemap->path = malloc(strlen(path) * sizeof(char));
+    strcpy(tilemap->path, path);
 }
 
 Tilemap *tilemapLoad(const char *filename) {
@@ -110,6 +119,9 @@ Tilemap *tilemapLoad(const char *filename) {
             return NULL;
         }
     }
+
+    tilemap->path = malloc(strlen(filename) * sizeof(char));
+    strcpy(tilemap->path, filename);
 
     fclose(fd);
     return tilemap;
@@ -212,10 +224,10 @@ void tilemapSetTile(Tilemap *tilemap, Rectangle pos, int src_id) {
     tilemap->tiles[tile_id].src_id = src_id;
 }
 
-void tilemapSave(Tilemap *tilemap, const char *filename) {
-    FILE *fd = fopen(filename, "w");
+void tilemapSave(Tilemap *tilemap) {
+    FILE *fd = fopen(tilemap->path, "w");
     if (!fd) {
-        TraceLog(LOG_ERROR, "Opening %s: %s", filename, strerror(errno));
+        TraceLog(LOG_ERROR, "Opening %s: %s", tilemap->path, strerror(errno));
         return;
     }
 
@@ -242,5 +254,6 @@ void tilemapDraw(Tilemap *tilemap) {
 
 void tilemapUnload(Tilemap *tilemap) {
     free(tilemap->tiles);
+    free(tilemap->path);
     free(tilemap);
 }
