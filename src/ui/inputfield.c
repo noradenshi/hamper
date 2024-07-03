@@ -2,46 +2,6 @@
 #include <raylib.h>
 
 void inputfieldUpdate(InputField *inputfield) {
-    if (inputfield->is_focused) {
-        KeyboardKey key = GetKeyPressed();
-
-        switch (key) {
-        case KEY_ENTER:
-            inputfield->on_submit();
-        case KEY_ESCAPE:
-        case KEY_TAB:
-            inputfield->is_focused = false;
-            break;
-        case KEY_BACKSPACE:
-            if (inputfield->cursor_pos > 0)
-                inputfield->cursor_pos--;
-
-            inputfield->text[inputfield->cursor_pos] = 0;
-            break;
-        case KEY_COMMA:
-        case KEY_PERIOD:
-        case KEY_SLASH:
-        case KEY_SEMICOLON:
-        case KEY_EQUAL:
-            break;
-        default:
-            if (inputfield->cursor_pos >= TEXT_MAX_LENGTH)
-                break;
-            if ((key >= KEY_APOSTROPHE && key <= KEY_NINE) ||
-                key == KEY_SPACE) {
-                inputfield->text[inputfield->cursor_pos] = (char)key;
-                inputfield->cursor_pos++;
-                break;
-            }
-            if (key >= KEY_A && key <= KEY_Z) {
-                inputfield->text[inputfield->cursor_pos] =
-                    (IsKeyDown(KEY_LEFT_SHIFT)) ? key : (key + 32);
-                inputfield->cursor_pos++;
-                break;
-            }
-        }
-    }
-
     inputfield->is_hover = false;
 
     if (CheckCollisionPointRec(GetMousePosition(), inputfield->rectangle)) {
@@ -49,6 +9,49 @@ void inputfieldUpdate(InputField *inputfield) {
 
         if (IsMouseButtonPressed(0))
             inputfield->is_focused = true;
+    }
+
+    if (!inputfield->is_focused)
+        return;
+
+    if (IsKeyDown(KEY_LEFT_CONTROL))
+        return;
+
+    KeyboardKey key = GetKeyPressed();
+
+    switch (key) {
+    case KEY_ENTER:
+        inputfield->on_submit();
+    case KEY_ESCAPE:
+    case KEY_TAB:
+        inputfield->is_focused = false;
+        break;
+    case KEY_BACKSPACE:
+        if (inputfield->cursor_pos > 0)
+            inputfield->cursor_pos--;
+
+        inputfield->text[inputfield->cursor_pos] = 0;
+        break;
+    case KEY_COMMA:
+    case KEY_PERIOD:
+    case KEY_SLASH:
+    case KEY_SEMICOLON:
+    case KEY_EQUAL:
+        break;
+    default:
+        if (inputfield->cursor_pos >= TEXT_MAX_LENGTH)
+            break;
+        if ((key >= KEY_APOSTROPHE && key <= KEY_NINE) || key == KEY_SPACE) {
+            inputfield->text[inputfield->cursor_pos] = (char)key;
+            inputfield->cursor_pos++;
+            break;
+        }
+        if (key >= KEY_A && key <= KEY_Z) {
+            inputfield->text[inputfield->cursor_pos] =
+                (IsKeyDown(KEY_LEFT_SHIFT)) ? key : (key + 32);
+            inputfield->cursor_pos++;
+            break;
+        }
     }
 }
 
@@ -59,7 +62,9 @@ void inputfieldSubmit(InputField *inputfield) {
 
 void inputfieldDraw(InputField *inputfield) {
     DrawRectangleRec(inputfield->rectangle,
-                     (inputfield->is_hover) ? LIGHTGRAY : WHITE);
+                     (inputfield->is_focused)
+                         ? LIGHTGRAY
+                         : ((inputfield->is_hover) ? GRAY : WHITE));
 
     DrawText(inputfield->text,
              inputfield->rectangle.x +

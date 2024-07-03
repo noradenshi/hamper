@@ -25,7 +25,10 @@ const int menu_titles_size = 3;
 
 int menu_buttons_size;
 
-void menu_play() { sceneSet(SCENE_PLAYING); }
+void menu_play() {
+    sceneLoadLevel(levelCorePath(LEVEL_TMP));
+    sceneSet(SCENE_PLAYING);
+}
 void menu_editor() { sceneSet(SCENE_EDITOR); }
 void menu_settings() { TraceLog(LOG_INFO, "TODO"); }
 void menu_exit() { sceneExit(); }

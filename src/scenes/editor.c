@@ -36,6 +36,8 @@ void saveAsCallback(void);
 
 bool save_as_is_visible = false;
 
+const char save_as_text[] = "Save as:";
+
 InputField save_as_inputfield = {
     (Rectangle){0, 0, SAVE_PROMPT_WIDTH, SAVE_PROMPT_FONTSIZE * 1.5f},
     SAVE_PROMPT_FONTSIZE, saveAsCallback};
@@ -44,11 +46,17 @@ bool mouse_is_held = false;
 
 Camera2D *editorGetCamera() { return &editor_camera; }
 
-void editorShowSaveAsDialog() { save_as_is_visible = true; }
+void editorShowSaveAsDialog() {
+    save_as_is_visible = true;
+    save_as_inputfield.is_focused = true;
+}
 
 bool editorIsDialog() { return save_as_is_visible; }
 
-void editorHideDialog() { save_as_is_visible = false; }
+void editorHideDialog() {
+    save_as_is_visible = false;
+    save_as_inputfield.is_focused = false;
+}
 
 void editorSave() {
     tilemapSave(levelGetTilemap(active_level));
@@ -76,7 +84,16 @@ void editorCameraUpdate() { editor_camera.offset = window_data.CENTER; }
 
 void editorUpdate() {
     if (save_as_is_visible) {
+        save_as_inputfield.rectangle.x =
+            window_data.CENTER.x - SAVE_PROMPT_WIDTH / 2.f;
+        save_as_inputfield.rectangle.y =
+            window_data.CENTER.y - SAVE_PROMPT_FONTSIZE / 2.f;
         inputfieldUpdate(&save_as_inputfield);
+
+        if (!save_as_inputfield.is_hover && save_as_inputfield.is_focused &&
+            IsMouseButtonPressed(0))
+            save_as_inputfield.is_focused = false;
+
         return;
     }
 
@@ -176,6 +193,17 @@ void editorDrawEnd2D() {
     }
 
     if (save_as_is_visible) {
+        DrawRectangle(
+            save_as_inputfield.rectangle.x - 20,
+            save_as_inputfield.rectangle.y - SAVE_PROMPT_FONTSIZE - 20,
+            SAVE_PROMPT_WIDTH + 40,
+            save_as_inputfield.rectangle.height + SAVE_PROMPT_FONTSIZE + 40,
+            (Color){120, 120, 120, 100});
+
+        DrawText(save_as_text, save_as_inputfield.rectangle.x,
+                 save_as_inputfield.rectangle.y - SAVE_PROMPT_FONTSIZE,
+                 SAVE_PROMPT_FONTSIZE, BLACK);
+
         inputfieldDraw(&save_as_inputfield);
     }
 }
