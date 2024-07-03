@@ -34,13 +34,21 @@ const char levels_path[] = "resources/levels/";
 #define SAVE_PROMPT_FONTSIZE 40
 void saveAsCallback(void);
 
-InputField file_save_as = {
+bool save_as_is_visible = false;
+
+InputField save_as_inputfield = {
     (Rectangle){0, 0, SAVE_PROMPT_WIDTH, SAVE_PROMPT_FONTSIZE * 1.5f},
     SAVE_PROMPT_FONTSIZE, saveAsCallback};
 
 bool mouse_is_held = false;
 
 Camera2D *editorGetCamera() { return &editor_camera; }
+
+void editorShowSaveAsDialog() { save_as_is_visible = true; }
+
+bool editorIsDialog() { return save_as_is_visible; }
+
+void editorHideDialog() { save_as_is_visible = false; }
 
 void editorSave() {
     tilemapSave(levelGetTilemap(active_level));
@@ -49,21 +57,26 @@ void editorSave() {
 
 void editorSaveAs(const char *filename) {
     char *path = malloc(strlen(levels_path) * sizeof(char) +
-                        strlen(filename) * sizeof(char));
+                        strlen(filename) * sizeof(char) + 1);
     strcpy(path, levels_path);
+    strcat(path, filename);
+
     tilemapSetPath(levelGetTilemap(active_level), path);
     free(path);
 
     editorSave();
 }
 
-void saveAsCallback(void) { editorSaveAs(file_save_as.text); }
+void saveAsCallback(void) {
+    editorSaveAs(save_as_inputfield.text);
+    save_as_is_visible = false;
+}
 
 void editorCameraUpdate() { editor_camera.offset = window_data.CENTER; }
 
 void editorUpdate() {
-    if (true) {
-        inputfieldUpdate(&file_save_as);
+    if (save_as_is_visible) {
+        inputfieldUpdate(&save_as_inputfield);
         return;
     }
 
@@ -162,7 +175,7 @@ void editorDrawEnd2D() {
                       toolbox.scale, (Color){200, 200, 200, 100});
     }
 
-    if (true) {
-        inputfieldDraw(&file_save_as);
+    if (save_as_is_visible) {
+        inputfieldDraw(&save_as_inputfield);
     }
 }

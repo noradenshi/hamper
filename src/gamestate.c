@@ -30,7 +30,7 @@ void sceneSet(Scene _scene) {
         ShowCursor();
         break;
     case SCENE_PLAYING:
-        sceneLoadLevel(levelCorePath(LEVEL_TMP));
+        // sceneLoadLevel(levelCorePath(LEVEL_TMP));
         HideCursor();
         alleySetTarget(
             GetScreenToWorld2D(GetMousePosition(), *hamsterGetCamera()));

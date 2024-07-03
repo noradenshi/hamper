@@ -1,11 +1,11 @@
 #include "entities/alley.h"
-#include "scenes/editor.h"
-#include "gamestate.h"
 #include "entities/hamster.h"
+#include "gamestate.h"
 #include "keybinds.h"
 #include "levels.h"
-#include "scenes/menu.h"
 #include "resources.h"
+#include "scenes/editor.h"
+#include "scenes/menu.h"
 #include <raylib.h>
 #include <raymath.h>
 #include <rlgl.h>
@@ -19,8 +19,6 @@ int main() {
 
     resourcesInit(); // initializes animations as well
     hamsterInit();
-    sceneLoadLevel("resources/levels/core/test_tmp");
-
     sceneSet(SCENE_MENU);
 
     while (!WindowShouldClose()) {

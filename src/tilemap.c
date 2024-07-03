@@ -53,9 +53,14 @@ Tilemap *tilemapEmpty() {
 int tilemapGetSize(Tilemap *tilemap) { return tilemap->size; }
 
 const char *tilemapGetPath(Tilemap *tilemap) { return tilemap->path; }
+
 void tilemapSetPath(Tilemap *tilemap, const char *path) {
-    free(tilemap->path);
-    tilemap->path = malloc(strlen(path) * sizeof(char));
+    tilemap->path = realloc(tilemap->path, strlen(path) * sizeof(char) + 1);
+    if (!tilemap->path) {
+        TraceLog(LOG_ERROR, "Allocating memory failed!");
+        abort();
+    }
+
     strcpy(tilemap->path, path);
 }
 
@@ -120,8 +125,7 @@ Tilemap *tilemapLoad(const char *filename) {
         }
     }
 
-    tilemap->path = malloc(strlen(filename) * sizeof(char));
-    strcpy(tilemap->path, filename);
+    tilemap->path = strdup(filename);
 
     fclose(fd);
     return tilemap;

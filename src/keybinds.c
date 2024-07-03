@@ -1,8 +1,8 @@
 #include "keybinds.h"
-#include "scenes/editor.h"
-#include "gamestate.h"
 #include "entities/hamster.h"
+#include "gamestate.h"
 #include "levels.h"
+#include "scenes/editor.h"
 #include <raylib.h>
 
 typedef enum _GlobalAction {
@@ -16,7 +16,7 @@ typedef enum _GlobalAction {
 typedef enum _EditorAction {
     EDITOR_PLAYING,
     EDITOR_SAVE,
-    EDITOR_OPTIONS,
+    EDITOR_DIALOG,
     EDITOR_END
 } EditorAction;
 
@@ -25,7 +25,7 @@ typedef enum _GameAction {
     GAME_MOVE_RIGHT,
     GAME_JUMP,
     GAME_RESET,
-    GAME_OPTIONS,
+    GAME_DIALOG,
     GAME_EDITOR,
     GAME_END
 } GameAction;
@@ -78,10 +78,20 @@ void keybindUpdate(ActionSet set) {
                 if (!IsKeyDown(KEY_LEFT_CONTROL))
                     break;
 
+                if (IsKeyDown(KEY_LEFT_SHIFT)) {
+                    editorShowSaveAsDialog();
+                    break;
+                }
+
                 editorSave();
                 break;
 
-            case EDITOR_OPTIONS:
+            case EDITOR_DIALOG:
+                if (editorIsDialog()) {
+                    editorHideDialog();
+                    break;
+                }
+
                 sceneSet(SCENE_MENU);
                 break;
             }
@@ -105,14 +115,13 @@ void keybindUpdate(ActionSet set) {
                 hamsterReset();
                 break;
 
-            case GAME_OPTIONS:
+            case GAME_DIALOG:
                 sceneSet(SCENE_MENU);
                 break;
 
             case GAME_EDITOR:
                 sceneSet(SCENE_EDITOR);
                 break;
-
             }
         }
     }
