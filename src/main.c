@@ -6,6 +6,7 @@
 #include "resources.h"
 #include "scenes/editor.h"
 #include "scenes/menu.h"
+#include "ui/level_selector.h"
 #include <raylib.h>
 #include <raymath.h>
 #include <rlgl.h>
@@ -99,6 +100,7 @@ int main() {
         EndDrawing();
     }
 
+    levelSelectorUnload();
     resourcesUnload();
     CloseWindow();
     return 0;

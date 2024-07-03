@@ -3,7 +3,7 @@
 
 typedef struct _Button {
     Rectangle rectangle;
-    const char *text;
+    char *text;
     void (*on_click)(void);
     bool is_hover;
 } Button;

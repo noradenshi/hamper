@@ -22,6 +22,7 @@ sources = [
 
   'src/ui/button.c',
   'src/ui/inputfield.c',
+  'src/ui/level_selector.c',
 
   'src/entities/hamster.c',
   'src/entities/alley.c',

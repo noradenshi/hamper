@@ -4,6 +4,7 @@
 #include "levels.h"
 #include "resources.h"
 #include "ui/button.h"
+#include "ui/level_selector.h"
 #include <raylib.h>
 
 #define MENU_BUTTON_WIDTH 220
@@ -25,11 +26,19 @@ const int menu_titles_size = 3;
 
 int menu_buttons_size;
 
+bool menu_is_level_selector = false;
+
 void menu_play() {
-    sceneLoadLevel(levelCorePath(LEVEL_TMP));
-    sceneSet(SCENE_PLAYING);
+    // sceneLoadLevel(levelCorePath(LEVEL_TMP));
+    // sceneSet(SCENE_PLAYING);
+    levelSelectorSetContext(SCENE_PLAYING);
+    menu_is_level_selector = true;
 }
-void menu_editor() { sceneSet(SCENE_EDITOR); }
+void menu_editor() {
+    // sceneSet(SCENE_EDITOR);
+    levelSelectorSetContext(SCENE_EDITOR);
+    menu_is_level_selector = true;
+}
 void menu_settings() { TraceLog(LOG_INFO, "TODO"); }
 void menu_exit() { sceneExit(); }
 
@@ -42,20 +51,13 @@ void menuInit() {
     animationSetFlipped(animations.alley_idle, true);
     animationSetFlipped(animations.hamster_idle, false);
     menu_buttons_size = sizeof(buttons) / sizeof(buttons[0]);
+    levelSelectorFetchData();
+    menu_is_level_selector = false;
 }
 
 Camera2D *menuGetCamera() { return &menu_camera; }
 
 void menuUpdate() {
-    for (int i = 0; i < menu_buttons_size; i++) {
-        buttons[i].rectangle = (Rectangle){
-            window_data.WIDTH / 2.f - MENU_BUTTON_WIDTH / 2.f,
-            window_data.HEIGHT - MENU_PAD * (menu_buttons_size - i) -
-                MENU_BUTTON_HEIGHT *
-                    (menu_buttons_size + MENU_BUTTON_OFFSET - i),
-            MENU_BUTTON_WIDTH, MENU_BUTTON_HEIGHT};
-        buttonUpdate(&buttons[i]);
-    }
     animationUpdate(animations.hamster_idle);
     animationUpdate(animations.alley_idle);
 
@@ -70,6 +72,24 @@ void menuUpdate() {
     // idk
     menu_camera.offset.x = window_data.WIDTH / 2.f;
     menu_camera.offset.y = window_data.HEIGHT / 2.f;
+
+    if (menu_is_level_selector) {
+        levelSelectorUpdate();
+
+        if (IsKeyPressed(KEY_ESCAPE))
+            menu_is_level_selector = false;
+        return;
+    }
+
+    for (int i = 0; i < menu_buttons_size; i++) {
+        buttons[i].rectangle = (Rectangle){
+            window_data.WIDTH / 2.f - MENU_BUTTON_WIDTH / 2.f,
+            window_data.HEIGHT - MENU_PAD * (menu_buttons_size - i) -
+                MENU_BUTTON_HEIGHT *
+                    (menu_buttons_size + MENU_BUTTON_OFFSET - i),
+            MENU_BUTTON_WIDTH, MENU_BUTTON_HEIGHT};
+        buttonUpdate(&buttons[i]);
+    }
 }
 
 void menuDraw() {
@@ -90,6 +110,11 @@ void menuDraw() {
              window_data.WIDTH / 2.f -
                  MeasureText(menu_titles[menu_title_id], 64) / 2.f,
              180, 64, WHITE);
+
+    if (menu_is_level_selector) {
+        levelSelectorDraw();
+        return;
+    }
 
     for (int i = 0; i < menu_buttons_size; i++)
         buttonDraw(&buttons[i]);

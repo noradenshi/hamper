@@ -3,6 +3,8 @@
 
 #define TILE_SIZE 8
 
+extern const char levels_path[];
+
 extern struct _WindowData {
     int WIDTH;
     int HEIGHT;

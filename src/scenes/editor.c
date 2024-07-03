@@ -28,8 +28,6 @@ struct _Toolbox {
 
 Camera2D editor_camera = {.zoom = 1.f};
 
-const char levels_path[] = "resources/levels/";
-
 #define SAVE_PROMPT_WIDTH 400
 #define SAVE_PROMPT_FONTSIZE 40
 void saveAsCallback(void);
@@ -178,6 +176,7 @@ void editorDrawEnd2D() {
                   textures.tileset.width * toolbox.zoom,
                   textures.tileset.height * toolbox.zoom,
                   (Color){80, 80, 80, 200});
+
     DrawTextureEx(textures.tileset, toolbox.position, 0.f, toolbox.zoom, WHITE);
 
     DrawRectangleLinesEx((Rectangle){selection.position.x, selection.position.y,

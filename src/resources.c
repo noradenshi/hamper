@@ -3,6 +3,8 @@
 #include <raylib.h>
 #include <stdlib.h>
 
+const char levels_path[] = "resources/levels/";
+
 struct _WindowData window_data = {0};
 struct _Textures textures = {0};
 struct _Recs recs = {0};
