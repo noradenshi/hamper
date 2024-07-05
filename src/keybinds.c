@@ -54,12 +54,12 @@ void keybindUpdate(ActionSet set) {
                 break;
 
                 // DEBUG; to be deleted
-            case GLOBAL_MAP_MENU:
-                sceneLoadLevel(levelCorePath(LEVEL_MENU));
-                break;
-            case GLOBAL_MAP_TMP:
-                sceneLoadLevel(levelCorePath(LEVEL_TMP));
-                break;
+                // case GLOBAL_MAP_MENU:
+                //     sceneLoadLevel(levelCorePath(LEVEL_MENU));
+                //     break;
+                // case GLOBAL_MAP_TMP:
+                //     sceneLoadLevel(levelCorePath(LEVEL_TMP));
+                //     break;
             }
         }
         break;
@@ -72,6 +72,8 @@ void keybindUpdate(ActionSet set) {
 
             case EDITOR_PLAYING:
                 sceneSet(SCENE_PLAYING);
+                // TEMP
+                editorSave();
                 break;
 
             case EDITOR_SAVE:

@@ -29,6 +29,9 @@ sources = [
   'src/entities/entity.c',
 ]
 
+
+install_subdir('resources', install_dir: dir + '/bin')
+
 executable('exe', sources,
   include_directories: ['include'],
   dependencies: deps,

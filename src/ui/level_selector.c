@@ -62,6 +62,7 @@ void levelSelectorFetchData() {
 
         level_buttons[size].text = strdup(de->d_name);
         level_buttons[size].on_click = levelSelectorCallback;
+        level_buttons[size].is_hover = false;
         size++;
     }
 

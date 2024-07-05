@@ -2,6 +2,6 @@
 subprojects/packagecache/
 subprojects/raylib-*/
 build*/
-bin/exe
+bin/
 resources/levels/*
 !resources/levels/core/
